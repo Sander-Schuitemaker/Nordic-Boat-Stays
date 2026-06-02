@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nordic Boat Stays</title>
+    <meta name="description" content="Vakantiehuizen in Noorwegen, altijd met boot." />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/nordic-boat-stays-logo.svg" type="image/svg+xml" />
+  </head>
+  <body class="home-page">
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="index.html"><img class="brand-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><span>Nordic Boat Stays</span></a>
+        <div class="nav-links">
+          <a aria-current="page" href="index.html">Home</a>
+          <a href="search.html">Zoeken</a>
+          <a href="rent.html">Verhuren</a>
+          <a class="messages-link" href="messages.html">Berichten <span class="nav-unread" data-unread-count hidden>0</span></a>
+          <a href="bookings.html">Boekingen</a>
+          <a href="favorites.html">Favorieten</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-actions">
+          <div class="logged-out-actions" data-logged-out>
+            <a class="button secondary" href="login.html">Inloggen</a>
+            <a class="button" href="rent.html">Verhuren</a>
+          </div>
+          <div class="user-menu" data-logged-in hidden>
+            <button class="language-switch" type="button" aria-label="Taal: Nederlands" title="Taal: Nederlands"><span class="flag-nl" aria-hidden="true"><i></i><i></i><i></i></span><span>NL</span></button>
+            <a class="user-chip" href="rent.html">
+              <span class="avatar">S</span>
+              <span data-user-name>Sander</span>
+            </a>
+            <button class="button secondary compact-button" type="button" onclick="mockLogout()">Uitloggen</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="booking-hero">
+        <div class="hero-inner booking-hero-inner">
+          <div class="category-nav" aria-label="Categorieën">
+            <a class="is-active" href="search.html">Vakantiehuizen</a>
+            <a href="rent.html">Verhuurders</a>
+          </div>
+          <div class="booking-hero-content">
+            <div>
+              <h1>Noorse vakantiehuizen met boot inbegrepen</h1>
+              <p>Zoek fjordhuizen, eilandvilla’s en cabins aan het water. Altijd met duidelijke bootinformatie en beschikbaarheid.</p>
+              <a class="button hero-cta" href="login.html" data-logged-out>Log in of meld je aan</a>
+              <div class="hero-session-card" data-logged-in hidden>
+                <span>Welkom terug, <strong data-user-name>Sander</strong></span>
+                <a href="messages.html"><strong data-unread-count>0</strong> gemiste berichten</a>
+              </div>
+            </div>
+          </div>
+          <form id="home-search" class="search-bar booking-search refined-search" action="search.html" method="get" data-custom-calendar="true">
+            <div class="field location-field"><label>Waar wil je naartoe?</label><input name="location" value="Lofoten" autocomplete="off" data-location-input /></div>
+            <div class="date-field" data-date-field="checkin">
+              <input name="checkin" type="hidden" value="2026-06-20" />
+              <button class="date-trigger" type="button" data-date-trigger="checkin">
+                <span>Incheckdatum</span>
+                <strong data-date-label="checkin">20 jun 2026</strong>
+              </button>
+            </div>
+            <div class="date-field" data-date-field="checkout">
+              <input name="checkout" type="hidden" value="2026-06-27" />
+              <button class="date-trigger" type="button" data-date-trigger="checkout">
+                <span>Uitcheckdatum</span>
+                <strong data-date-label="checkout">27 jun 2026</strong>
+              </button>
+            </div>
+            <div class="field"><label>Gasten</label><input name="guests" type="number" min="1" value="4" /></div>
+            <button class="button booking-search-button" type="submit">Zoek</button>
+            <div class="calendar-popover" data-calendar-popover hidden>
+              <div class="calendar-topbar">
+                <button class="calendar-arrow" type="button" data-calendar-prev aria-label="Vorige maand">‹</button>
+                <div class="calendar-status" data-calendar-status>Kies je incheckdatum</div>
+                <button class="calendar-arrow" type="button" data-calendar-next aria-label="Volgende maand">›</button>
+              </div>
+              <div class="calendar-months" data-calendar-months></div>
+              <div class="calendar-flex-options" aria-label="Flexibele datumopties">
+                <button type="button" class="is-active" data-flex-days="0">Exacte datums</button>
+                <button type="button" data-flex-days="1">± 1 dag</button>
+                <button type="button" data-flex-days="2">± 2 dagen</button>
+                <button type="button" data-flex-days="3">± 3 dagen</button>
+                <button type="button" data-flex-days="7">± 7 dagen</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="section trust-section">
+        <div class="section-head">
+          <div>
+            <h2>Gebouwd voor zorgeloos boeken</h2>
+            <p class="lead">Een goede bookingsite laat je vóór betaling precies zien waar je aan toe bent. Daarom combineren we woning, boot, beschikbaarheid en contact in één flow.</p>
+          </div>
+        </div>
+        <div class="trust-grid">
+          <div><strong>Geverifieerde bootgegevens</strong><span>Type boot, capaciteit, motorvermogen en veiligheidsuitrusting staan zichtbaar bij elk huis.</span></div>
+          <div><strong>Beschikbaarheid klopt mee</strong><span>Betaalde boekingen blokkeren direct de gekozen data in agenda en zoekresultaten.</span></div>
+          <div><strong>Shortlist met favorieten</strong><span>Bewaar huizen met boot en vergelijk prijs, regio en capaciteit later rustig.</span></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>Populaire huizen</h2>
+            <p class="lead">Een eerste selectie aan het water. Meer huizen verschijnen op de resultatenpagina zodra je zoekt.</p>
+          </div>
+          <a class="button secondary" href="search.html">Bekijk alles</a>
+        </div>
+        <div class="listing-grid" data-featured-listings></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>Uitgelichte regio's</h2>
+            <p class="lead">Noorwegen blijft overzichtelijk met zorgvuldig gekozen regio's voor water, natuur en boottochten.</p>
+          </div>
+        </div>
+        <div class="grid-3">
+          <a class="region" href="search.html?location=Lofoten"><img alt="Lofoten" src="https://commons.wikimedia.org/wiki/Special:FilePath/Lofoten%2C%20Norway%20%28Unsplash%20dVV1h3odR9s%29.jpg?width=900"><div class="region-body"><h3>Lofoten</h3><p>Dramatische bergen, vissersdorpen en middernachtzon.</p></div></a>
+          <a class="region" href="search.html?location=Bergen"><img alt="Bergen" src="https://commons.wikimedia.org/wiki/Special:FilePath/Bryggen%2C%20Bergen%2C%20Norway%20%28Unsplash%29.jpg?width=900"><div class="region-body"><h3>Bergen</h3><p>Fjordstad met houten kades en eilandroutes.</p></div></a>
+          <a class="region" href="search.html?location=Geirangerfjord"><img alt="Geirangerfjord" src="https://commons.wikimedia.org/wiki/Special:FilePath/Geirangerfjord%2C%20Norway%20%28Unsplash%29.jpg?width=900"><div class="region-body"><h3>Geirangerfjord</h3><p>Watervallen, bergwanden en stille inhammen.</p></div></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer"><div class="footer-inner"><div><div class="footer-brand"><img class="footer-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><strong>Nordic Boat Stays</strong></div><span>Vakantiehuizen in Noorwegen, altijd met boot.</span></div><div>Mock-auth en mock-payments voor MVP.</div><div><a href="rent.html">Verhuren</a> · <a href="login.html">Inloggen</a></div></div></footer>
+    <script src="app.js"></script>
+  </body>
+</html>

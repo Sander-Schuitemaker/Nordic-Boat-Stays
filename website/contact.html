@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact | Nordic Boat Stays</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/nordic-boat-stays-logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="index.html"><img class="brand-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><span>Nordic Boat Stays</span></a>
+        <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Zoeken</a><a href="rent.html">Verhuren</a><a href="messages.html">Berichten</a><a href="bookings.html">Boekingen</a><a href="favorites.html">Favorieten</a><a aria-current="page" href="contact.html">Contact</a></div>
+        <div class="nav-actions"><a class="button secondary" href="login.html">Inloggen</a><a class="button" href="rent.html">Verhuren</a></div>
+      </nav>
+    </header>
+    <main class="page-shell">
+      <div class="grid-2">
+        <section>
+          <h1>Contact</h1>
+          <p class="lead">Vragen over huizen, bootveiligheid of verhuurderschap? Stuur ons een bericht.</p>
+        </section>
+        <form class="panel" onsubmit="event.preventDefault(); this.querySelector('[data-contact-message]').textContent='Bericht verzonden. We nemen mock-contact met je op.'">
+          <div class="field"><label>Naam</label><input placeholder="Je naam"></div>
+          <div class="field" style="margin-top:14px;"><label>E-mail</label><input type="email" placeholder="naam@example.com"></div>
+          <div class="field" style="margin-top:14px;"><label>Bericht</label><textarea placeholder="Waar kunnen we mee helpen?"></textarea></div>
+          <button class="button" style="margin-top:18px;" type="submit">Bericht versturen</button>
+          <p class="lead" data-contact-message></p>
+        </form>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

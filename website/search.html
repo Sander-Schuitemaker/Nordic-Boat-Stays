@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zoeken | Nordic Boat Stays</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/nordic-boat-stays-logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="index.html"><img class="brand-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><span>Nordic Boat Stays</span></a>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a aria-current="page" href="search.html">Zoeken</a>
+          <a href="rent.html">Verhuren</a>
+          <a href="messages.html">Berichten</a>
+          <a href="bookings.html">Boekingen</a>
+          <a href="favorites.html">Favorieten</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-actions"><a class="button secondary" href="login.html">Inloggen</a><a class="button" href="rent.html">Verhuren</a></div>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <form class="search-bar compact-search refined-search" action="search.html" method="get" data-custom-calendar="true">
+        <input data-query-field name="sort" type="hidden" />
+        <div class="field location-field"><label>Locatie</label><input data-query-field name="location" placeholder="Zoek elke plaats in Noorwegen..." autocomplete="off" data-location-input /></div>
+        <div class="date-field" data-date-field="checkin">
+          <input data-query-field name="checkin" type="hidden" />
+          <button class="date-trigger" type="button" data-date-trigger="checkin" aria-expanded="false">
+            <span>Check-in</span>
+            <strong data-date-label="checkin">Kies incheckdatum</strong>
+          </button>
+        </div>
+        <div class="date-field" data-date-field="checkout">
+          <input data-query-field name="checkout" type="hidden" />
+          <button class="date-trigger" type="button" data-date-trigger="checkout" aria-expanded="false">
+            <span>Check-out</span>
+            <strong data-date-label="checkout">Kies uitcheckdatum</strong>
+          </button>
+        </div>
+        <div class="field"><label>Gasten</label><input data-query-field name="guests" type="number" min="1" value="2" /></div>
+        <div class="filter-field search-filter-field">
+          <button class="filter-trigger" type="button" data-filter-toggle aria-expanded="false">Filters <span class="filter-count" data-filter-count hidden>0</span></button>
+          <div class="filter-popover search-filter-popover" data-filter-popover hidden>
+            <div class="filter-scroll">
+              <section class="filter-section">
+                <h2>Type ruimte</h2>
+                <div class="segmented-control">
+                  <label><input data-query-field type="radio" name="roomType" value="all" checked><span>Alle</span></label>
+                  <label><input data-query-field type="radio" name="roomType" value="room"><span>Kamer</span></label>
+                  <label><input data-query-field type="radio" name="roomType" value="entire"><span>Hele woning</span></label>
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Prijsbereik</h2>
+                <p class="filter-help">Prijs per nacht, inclusief vaste kosten in deze demo.</p>
+                <div class="price-range-control expanded" data-price-range>
+                  <div class="price-histogram" data-price-histogram aria-label="Aantal huisjes per prijsklasse"></div>
+                  <p class="price-histogram-summary" data-price-histogram-summary></p>
+                  <div class="range-sliders">
+                    <div class="price-track"><span></span></div>
+                    <input data-query-field name="minPrice" type="range" min="50" max="2800" step="50" value="50" data-price-min />
+                    <input data-query-field name="maxPrice" type="range" min="50" max="2800" step="50" value="2800" data-price-max />
+                  </div>
+                  <div class="price-range-head price-range-foot">
+                    <strong>Minimum <span data-min-price-label>€50</span></strong>
+                    <strong>Maximum <span data-max-price-label>€2800</span></strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Kamers en bedden</h2>
+                <div class="stepper-filter" data-stepper-filter data-stepper-name="bedrooms">
+                  <span>Slaapkamers</span><button type="button" data-step="-1" aria-label="Minder slaapkamers">−</button><output>Alles</output><button type="button" data-step="1" aria-label="Meer slaapkamers">+</button><input data-query-field name="bedrooms" type="hidden" value="">
+                </div>
+                <div class="stepper-filter" data-stepper-filter data-stepper-name="beds">
+                  <span>Bedden</span><button type="button" data-step="-1" aria-label="Minder bedden">−</button><output>Alles</output><button type="button" data-step="1" aria-label="Meer bedden">+</button><input data-query-field name="beds" type="hidden" value="">
+                </div>
+                <div class="stepper-filter" data-stepper-filter data-stepper-name="bathrooms">
+                  <span>Badkamers</span><button type="button" data-step="-1" aria-label="Minder badkamers">−</button><output>Alles</output><button type="button" data-step="1" aria-label="Meer badkamers">+</button><input data-query-field name="bathrooms" type="hidden" value="">
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Voorzieningen</h2>
+                <h3>Populair</h3>
+                <div class="filter-chip-grid">
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="washer" value="1"><span>Wasmachine</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="wifi" value="1"><span>Wifi</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="tv" value="1"><span>TV</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="airco" value="1"><span>Airconditioning</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="heating" value="1"><span>Verwarming</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="hotTub" value="1"><span>Bubbelbad</span></label>
+                </div>
+                <h3>Basics</h3>
+                <div class="filter-chip-grid">
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="kitchen" value="1"><span>Keuken</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="dryer" value="1"><span>Droger</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="workspace" value="1"><span>Eigen werkplek</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="hairdryer" value="1"><span>Haardroger</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="iron" value="1"><span>Strijkijzer</span></label>
+                </div>
+                <h3>Extra's</h3>
+                <div class="filter-chip-grid">
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="pool" value="1"><span>Zwembad</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="parking" value="1"><span>Gratis parkeren</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="evCharger" value="1"><span>Oplaadpunt elektrische auto</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="crib" value="1"><span>Wiegje</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="kingBed" value="1"><span>Kingsize bed</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="gym" value="1"><span>Fitnessruimte</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="bbq" value="1"><span>Barbecue/grill</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="breakfast" value="1"><span>Ontbijt</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="fireplace" value="1"><span>Open haard</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="smoking" value="1"><span>Roken toegestaan</span></label>
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Locatie</h2>
+                <div class="filter-chip-grid">
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="beach" value="1"><span>Aan het strand</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="waterfront" value="1"><span>Aan het water</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="dock" value="1"><span>Eigen steiger</span></label>
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Veiligheid</h2>
+                <div class="filter-chip-grid">
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="smokeDetector" value="1"><span>Rookmelder</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="coDetector" value="1"><span>Koolmonoxidemelder</span></label>
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Boekingsopties</h2>
+                <div class="filter-chip-grid">
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="directBooking" value="1"><span>Direct boeken</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="selfCheckin" value="1"><span>Zelf inchecken</span></label>
+                  <label class="filter-chip"><input data-query-field type="checkbox" name="pets" value="1"><span>Huisdieren toegestaan</span></label>
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Woningtype</h2>
+                <div class="filter-chip-grid">
+                  <label class="filter-chip"><input data-query-field type="radio" name="propertyType" value="" checked><span>Alles</span></label>
+                  <label class="filter-chip"><input data-query-field type="radio" name="propertyType" value="house"><span>Woning</span></label>
+                  <label class="filter-chip"><input data-query-field type="radio" name="propertyType" value="apartment"><span>Appartement</span></label>
+                  <label class="filter-chip"><input data-query-field type="radio" name="propertyType" value="guesthouse"><span>Gastenverblijf</span></label>
+                  <label class="filter-chip"><input data-query-field type="radio" name="propertyType" value="hotel"><span>Hotel</span></label>
+                </div>
+              </section>
+
+              <section class="filter-section">
+                <h2>Toegankelijkheidsvoorzieningen</h2>
+                <h3>Ingang en parkeerplaats voor gasten</h3>
+                <div class="accessibility-list">
+                  <label><input data-query-field type="checkbox" name="stepFreeAccess" value="1"> Toegang zonder drempel</label>
+                  <label><input data-query-field type="checkbox" name="accessibleParking" value="1"> Gehandicaptenparkeerplaats</label>
+                  <label><input data-query-field type="checkbox" name="wideEntrance" value="1"> Ingang voor gasten breder dan 81 cm</label>
+                </div>
+                <h3>Slaapkamer</h3>
+                <div class="accessibility-list">
+                  <label><input data-query-field type="checkbox" name="stepFreeBedroom" value="1"> Drempelvrije toegang tot slaapkamer</label>
+                  <label><input data-query-field type="checkbox" name="wideBedroom" value="1"> Ingang naar slaapkamer breder dan 81 cm</label>
+                </div>
+                <h3>Badkamer</h3>
+                <div class="accessibility-list">
+                  <label><input data-query-field type="checkbox" name="stepFreeBathroom" value="1"> Drempelvrije toegang tot badkamer</label>
+                  <label><input data-query-field type="checkbox" name="wideBathroom" value="1"> Ingang naar badkamer breder dan 81 cm</label>
+                  <label><input data-query-field type="checkbox" name="toiletGrabBars" value="1"> Handgrepen in het toilet</label>
+                  <label><input data-query-field type="checkbox" name="showerGrabBars" value="1"> Handgrepen in de douche</label>
+                  <label><input data-query-field type="checkbox" name="stepFreeShower" value="1"> Drempelvrije douche</label>
+                  <label><input data-query-field type="checkbox" name="showerChair" value="1"> Douche- of badstoel</label>
+                </div>
+                <h3>Aangepaste apparatuur</h3>
+                <div class="accessibility-list">
+                  <label><input data-query-field type="checkbox" name="hoist" value="1"> Vaste of mobiele tillift</label>
+                </div>
+              </section>
+            </div>
+            <div class="filter-actions">
+              <a class="button secondary" href="search.html">Wis filters</a>
+              <button class="button" type="submit">Filters toepassen</button>
+            </div>
+          </div>
+        </div>
+        <div class="search-actions">
+          <button class="button" type="submit">Zoek opnieuw</button>
+          <a class="button secondary" href="search.html">Wis</a>
+        </div>
+        <div class="calendar-popover search-calendar-popover" data-calendar-popover hidden>
+          <div class="calendar-topbar">
+            <button class="calendar-arrow" type="button" data-calendar-prev aria-label="Vorige maand">‹</button>
+            <div class="calendar-status" data-calendar-status>Kies je incheckdatum</div>
+            <button class="calendar-arrow" type="button" data-calendar-next aria-label="Volgende maand">›</button>
+          </div>
+          <div class="calendar-months" data-calendar-months></div>
+          <div class="calendar-flex-options" aria-label="Flexibele data">
+            <button type="button" data-flex-days="0" class="is-active">Exacte datums</button>
+            <button type="button" data-flex-days="1">± 1 dag</button>
+            <button type="button" data-flex-days="2">± 2 dagen</button>
+            <button type="button" data-flex-days="3">± 3 dagen</button>
+            <button type="button" data-flex-days="7">± 7 dagen</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="section-head" style="margin-top:34px;">
+        <div>
+          <h1 data-result-count>Huizen met boot gevonden</h1>
+          <p class="lead">Je gekozen data en filters worden hieronder toegepast.</p>
+          <div class="applied-filters" data-applied-filters></div>
+        </div>
+        <label class="sort-control">Sorteren
+          <select data-sort-select>
+            <option value="">Aanbevolen</option>
+            <option value="priceAsc">Laagste prijs eerst</option>
+            <option value="priceDesc">Hoogste prijs eerst</option>
+            <option value="rating">Hoogste score eerst</option>
+            <option value="popularity">Populairst eerst</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="search-layout">
+        <section class="listing-grid" data-search-results></section>
+        <aside class="panel map-panel" aria-label="Interactieve kaart van Noorwegen">
+          <div class="map-toolbar">
+            <strong>Kaart van Noorwegen</strong>
+            <span data-map-count>Scroll om te zoomen · klik een prijs</span>
+          </div>
+          <div id="norway-map" data-map></div>
+        </aside>
+      </div>
+      <section class="nearby-section" data-nearby-section hidden>
+        <div class="section-head">
+          <div>
+            <h2>Andere huizen in Noorwegen</h2>
+            <p class="lead">Je bent uitgezoomd op de kaart. Daarom tonen we ook woningen buiten je locatie-filter.</p>
+          </div>
+        </div>
+        <div class="listing-grid nearby-grid" data-nearby-results></div>
+      </section>
+    </main>
+    <footer class="footer"><div class="footer-inner"><div class="footer-brand"><img class="footer-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><strong>Nordic Boat Stays</strong></div><div>Resultaten met toegepaste filters.</div><div><a href="index.html">Terug naar home</a></div></div></footer>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

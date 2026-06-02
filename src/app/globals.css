@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8fbfc;
+  --foreground: #112433;
+  --card: #ffffff;
+  --card-foreground: #112433;
+  --muted: #e8f1f4;
+  --muted-foreground: #617381;
+  --primary: #0b2f45;
+  --primary-foreground: #ffffff;
+  --secondary: #dbeef4;
+  --secondary-foreground: #123446;
+  --accent: #b88752;
+  --accent-foreground: #ffffff;
+  --border: #d6e2e7;
+  --ring: #88bdd0;
+  --radius: 1rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-geist-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  font-family: inherit;
+}
+
+.price-pin {
+  border: 0;
+  background: transparent;
+}
+
+.price-pin div {
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgb(17 36 51 / 18%);
+  color: #0b2f45;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.price-pin.is-active div {
+  background: #0b2f45;
+  color: #ffffff;
+}

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Huis toevoegen | Nordic Boat Stays</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/nordic-boat-stays-logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="index.html"><img class="brand-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><span>Nordic Boat Stays</span></a>
+        <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Zoeken</a><a aria-current="page" href="rent.html">Verhuren</a><a href="messages.html">Berichten</a><a href="bookings.html">Boekingen</a><a href="favorites.html">Favorieten</a><a href="contact.html">Contact</a></div>
+        <div class="nav-actions"><a class="button secondary" href="login.html">Inloggen</a><a class="button" href="rent.html">Dashboard</a></div>
+      </nav>
+    </header>
+    <main class="page-shell">
+      <div class="dashboard-layout">
+        <aside class="panel side-nav">
+          <a href="rent.html">Dashboard</a>
+          <a aria-current="page" href="new-listing.html">Huis toevoegen</a>
+          <a href="rent.html#boekingen">Boekingen</a>
+          <a href="rent.html#beschikbaarheid">Beschikbaarheid</a>
+          <a href="messages.html">Berichten</a>
+          <a href="login.html">Account</a>
+        </aside>
+        <section>
+          <div class="section-head dashboard-head">
+            <div>
+              <h1>Nieuw vakantiehuis maken</h1>
+              <p class="lead">Vul hier alle informatie in die een huurder nodig heeft: locatie, filters, foto's, bootgegevens en beschikbaarheid.</p>
+            </div>
+            <a class="button secondary" href="rent.html">Terug naar dashboard</a>
+          </div>
+
+          <form class="host-listing-form" id="nieuw-huis" onsubmit="previewHostListing(event)" data-redirect-after-save="true" data-host-listing-form>
+            <section class="panel form-section">
+              <div>
+                <h2>Basisinformatie</h2>
+                <p class="lead">Deze informatie vormt de bovenkant van je huisjespagina.</p>
+              </div>
+              <div class="form-grid">
+                <div class="field"><label>Titel</label><input name="title" value="Fjordhuis met boot" required></div>
+                <div class="field wide"><label>Woonadres</label><input name="address" value="Hamnoy, Noorwegen" placeholder="Straat, huisnummer en plaats in Noorwegen" autocomplete="off" data-address-input required><small class="field-help">Begin met typen en kies een officieel Noors adres. Plaats, regio en coördinaten worden automatisch ingevuld.</small></div>
+                <div class="field"><label>Plaats</label><input name="city" value="Hamnoy" data-address-city required></div>
+                <div class="field"><label>Regio/fylke</label><input name="region" value="Nordland" data-address-region required></div>
+                <div class="field"><label>Coördinaten</label><input name="coordinates" value="67.945000, 13.132000" data-address-coordinates readonly required></div>
+                <div class="field"><label>Prijs per nacht</label><input name="price" type="number" value="390" min="50" required></div>
+                <div class="field"><label>Max. gasten</label><input name="guests" type="number" value="6" min="1" required></div>
+                <div class="field"><label>Slaapkamers</label><input name="bedrooms" type="number" value="3" min="0" required></div>
+                <div class="field"><label>Badkamers</label><input name="bathrooms" type="number" value="2" min="0"></div>
+                <div class="field wide"><label>Beschrijving</label><textarea name="description">Rustig vakantiehuis aan het water met eigen steiger, boot en veiligheidsuitrusting.</textarea></div>
+              </div>
+            </section>
+
+            <section class="panel form-section">
+              <div>
+                <h2>Maandprijzen</h2>
+                <p class="lead">Alle prijzen staan nu in EUR (€). NOK voegen we later toe op basis van het land waaruit geboekt wordt.</p>
+              </div>
+              <div class="currency-note"><strong>Valuta</strong><span>EUR (€)</span></div>
+              <div class="monthly-price-grid">
+                <div class="field currency-field"><label>Jan</label><span>€</span><input name="priceMonth01" type="number" placeholder="390"></div>
+                <div class="field currency-field"><label>Feb</label><span>€</span><input name="priceMonth02" type="number" placeholder="390"></div>
+                <div class="field currency-field"><label>Mrt</label><span>€</span><input name="priceMonth03" type="number" placeholder="390"></div>
+                <div class="field currency-field"><label>Apr</label><span>€</span><input name="priceMonth04" type="number" placeholder="390"></div>
+                <div class="field currency-field"><label>Mei</label><span>€</span><input name="priceMonth05" type="number" placeholder="420"></div>
+                <div class="field currency-field"><label>Jun</label><span>€</span><input name="priceMonth06" type="number" placeholder="520"></div>
+                <div class="field currency-field"><label>Jul</label><span>€</span><input name="priceMonth07" type="number" placeholder="650"></div>
+                <div class="field currency-field"><label>Aug</label><span>€</span><input name="priceMonth08" type="number" placeholder="620"></div>
+                <div class="field currency-field"><label>Sep</label><span>€</span><input name="priceMonth09" type="number" placeholder="480"></div>
+                <div class="field currency-field"><label>Okt</label><span>€</span><input name="priceMonth10" type="number" placeholder="390"></div>
+                <div class="field currency-field"><label>Nov</label><span>€</span><input name="priceMonth11" type="number" placeholder="360"></div>
+                <div class="field currency-field"><label>Dec</label><span>€</span><input name="priceMonth12" type="number" placeholder="440"></div>
+              </div>
+            </section>
+
+            <section class="panel form-section">
+              <div>
+                <h2>Filters en voorzieningen</h2>
+                <p class="lead">Deze opties zijn gekoppeld aan dezelfde filters die huurders op de zoekpagina gebruiken.</p>
+              </div>
+              <div class="form-grid">
+                <div class="field"><label>Woningtype</label><select name="propertyType"><option value="house">Woning</option><option value="apartment">Appartement</option><option value="guesthouse">Gastenverblijf</option><option value="hotel">Hotel</option></select></div>
+                <div class="field"><label>Type ruimte</label><select name="roomType"><option value="entire">Hele woning</option><option value="room">Kamer</option></select></div>
+                <div class="field"><label>Bedden</label><input name="beds" type="number" value="4" min="1"></div>
+              </div>
+              <div class="amenity-groups">
+                <div><h3>Populair</h3><div class="amenity-editor">
+                  <label><input type="checkbox" name="washer" data-amenity> Wasmachine</label>
+                  <label><input type="checkbox" name="wifi" data-amenity checked> Wifi</label>
+                  <label><input type="checkbox" name="tv" data-amenity> TV</label>
+                  <label><input type="checkbox" name="airco" data-amenity> Airconditioning</label>
+                  <label><input type="checkbox" name="heating" data-amenity checked> Verwarming</label>
+                  <label><input type="checkbox" name="hotTub" data-amenity> Bubbelbad</label>
+                </div></div>
+                <div><h3>Basics</h3><div class="amenity-editor">
+                  <label><input type="checkbox" name="kitchen" data-amenity checked> Keuken</label>
+                  <label><input type="checkbox" name="dryer" data-amenity> Droger</label>
+                  <label><input type="checkbox" name="workspace" data-amenity> Eigen werkplek</label>
+                  <label><input type="checkbox" name="hairdryer" data-amenity> Haardroger</label>
+                  <label><input type="checkbox" name="iron" data-amenity> Strijkijzer</label>
+                </div></div>
+                <div><h3>Extra's</h3><div class="amenity-editor">
+                  <label><input type="checkbox" name="pool" data-amenity> Zwembad</label>
+                  <label><input type="checkbox" name="parking" data-amenity checked> Gratis parkeren</label>
+                  <label><input type="checkbox" name="evCharger" data-amenity> Oplaadpunt elektrische auto</label>
+                  <label><input type="checkbox" name="crib" data-amenity> Wiegje</label>
+                  <label><input type="checkbox" name="kingBed" data-amenity> Kingsize bed</label>
+                  <label><input type="checkbox" name="gym" data-amenity> Fitnessruimte</label>
+                  <label><input type="checkbox" name="bbq" data-amenity> Barbecue/grill</label>
+                  <label><input type="checkbox" name="breakfast" data-amenity> Ontbijt</label>
+                  <label><input type="checkbox" name="fireplace" data-amenity> Open haard</label>
+                  <label><input type="checkbox" name="smoking" data-amenity> Roken toegestaan</label>
+                </div></div>
+                <div><h3>Locatie</h3><div class="amenity-editor">
+                  <label><input type="checkbox" name="beach" data-amenity> Aan het strand</label>
+                  <label><input type="checkbox" name="waterfront" data-amenity checked> Aan het water</label>
+                  <label><input type="checkbox" name="dock" data-amenity checked> Eigen steiger</label>
+                </div></div>
+                <div><h3>Veiligheid</h3><div class="amenity-editor">
+                  <label><input type="checkbox" name="smokeDetector" data-amenity checked> Rookmelder</label>
+                  <label><input type="checkbox" name="coDetector" data-amenity checked> Koolmonoxidemelder</label>
+                </div></div>
+                <div><h3>Boekingsopties</h3><div class="amenity-editor">
+                  <label><input type="checkbox" name="directBooking" data-amenity checked> Direct boeken</label>
+                  <label><input type="checkbox" name="selfCheckin" data-amenity> Zelf inchecken</label>
+                  <label><input type="checkbox" name="pets" data-amenity checked> Huisdieren toegestaan</label>
+                </div></div>
+                <div><h3>Toegankelijkheid</h3><div class="amenity-editor">
+                  <label><input type="checkbox" name="stepFreeAccess" data-amenity> Toegang zonder drempel</label>
+                  <label><input type="checkbox" name="accessibleParking" data-amenity> Gehandicaptenparkeerplaats</label>
+                  <label><input type="checkbox" name="wideEntrance" data-amenity> Brede ingang</label>
+                  <label><input type="checkbox" name="stepFreeBedroom" data-amenity> Drempelvrije slaapkamer</label>
+                  <label><input type="checkbox" name="wideBedroom" data-amenity> Brede slaapkamerdeur</label>
+                  <label><input type="checkbox" name="stepFreeBathroom" data-amenity> Drempelvrije badkamer</label>
+                  <label><input type="checkbox" name="wideBathroom" data-amenity> Brede badkamerdeur</label>
+                  <label><input type="checkbox" name="toiletGrabBars" data-amenity> Handgrepen toilet</label>
+                  <label><input type="checkbox" name="showerGrabBars" data-amenity> Handgrepen douche</label>
+                  <label><input type="checkbox" name="stepFreeShower" data-amenity> Drempelvrije douche</label>
+                  <label><input type="checkbox" name="showerChair" data-amenity> Douche- of badstoel</label>
+                  <label><input type="checkbox" name="hoist" data-amenity> Tillift</label>
+                </div></div>
+              </div>
+            </section>
+
+            <section class="panel form-section">
+              <div>
+                <h2>Foto's</h2>
+                <p class="lead">Kies meerdere bestanden, bepaal de volgorde en kies per foto hoe de uitsnede op de huispagina moet vallen.</p>
+              </div>
+              <div class="photo-uploader" data-photo-uploader>
+                <label class="photo-dropzone">
+                  <input name="photoFiles" type="file" accept="image/*" multiple data-photo-input>
+                  <strong>Foto's kiezen</strong>
+                  <span>Meerdere JPG/PNG-bestanden tegelijk. Sleep de volgorde met de knoppen omhoog/omlaag.</span>
+                </label>
+                <input name="photosJson" type="hidden" data-photo-json>
+                <div class="photo-preview-grid" data-photo-preview></div>
+                <div class="page-preview-card" data-listing-preview>
+                  <div class="preview-cover"></div>
+                  <div>
+                    <strong>Voorbeeld van je huispagina</strong>
+                    <p>Na het kiezen van foto's zie je hier de hoofdfoto en volgorde zoals huurders die gaan zien.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel form-section">
+              <div>
+                <h2>Bootgegevens</h2>
+                <p class="lead">De boot hoort bij het huis, dus deze gegevens komen duidelijk op de huisjespagina.</p>
+              </div>
+              <div class="form-grid">
+                <div class="field"><label>Type boot</label><select name="boat"><option>RIB</option><option>Motorboot</option><option>Vissersboot</option><option>Kajuitboot</option></select></div>
+                <div class="field"><label>Capaciteit boot</label><input name="boatCapacity" value="6 personen"></div>
+                <div class="field"><label>Motorvermogen</label><input name="enginePower" value="115 pk"></div>
+                <div class="field"><label>Vaarbewijs nodig</label><select name="licenseRequired"><option value="nee">Nee</option><option value="ja">Ja</option></select></div>
+                <div class="field wide"><label>Veiligheidsuitrusting</label><input name="safety" value="Zwemvesten, noodlijn, brandblusser en kaart inbegrepen"></div>
+              </div>
+            </section>
+
+            <section class="panel form-section">
+              <div>
+                <h2>Beschikbaarheid</h2>
+                <p class="lead">Klik dagen in de agenda aan waarop het huis niet beschikbaar is. Nogmaals klikken maakt de dag weer beschikbaar.</p>
+              </div>
+              <div class="host-availability-calendar" data-host-unavailable-calendar>
+                <input name="unavailableDatesJson" type="hidden" data-host-unavailable-json>
+                <div class="calendar-topbar">
+                  <button class="calendar-arrow" type="button" data-host-calendar-prev aria-label="Vorige maand">‹</button>
+                  <div class="calendar-status" data-host-calendar-status>Geen dagen geblokkeerd</div>
+                  <button class="calendar-arrow" type="button" data-host-calendar-next aria-label="Volgende maand">›</button>
+                </div>
+                <div class="calendar-months host-calendar-months" data-host-calendar-months></div>
+                <p class="calendar-legend"><span></span> Donkere dagen zijn niet beschikbaar voor huurders.</p>
+              </div>
+            </section>
+
+            <section class="panel form-section host-publish-preview" data-host-page-preview hidden></section>
+
+            <div class="publish-bar">
+              <p class="lead" data-save-message></p>
+              <div class="publish-actions">
+                <button class="button secondary" type="submit">Voorbeeld bekijken</button>
+                <button class="button" type="button" data-publish-after-preview onclick="saveHostListing(event)" hidden disabled>Huis publiceren</button>
+              </div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+    <footer class="footer"><div class="footer-inner"><div class="footer-brand"><img class="footer-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><strong>Nordic Boat Stays</strong></div><div>Een volledige huispagina maken voor huurders.</div><div><a href="rent.html">Dashboard</a></div></div></footer>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inloggen | Nordic Boat Stays</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/nordic-boat-stays-logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="index.html"><img class="brand-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><span>Nordic Boat Stays</span></a>
+        <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Zoeken</a><a href="rent.html">Verhuren</a><a href="messages.html">Berichten</a><a href="bookings.html">Boekingen</a><a href="favorites.html">Favorieten</a><a href="contact.html">Contact</a></div>
+        <div class="nav-actions"><a class="button secondary" aria-current="page" href="login.html">Inloggen</a></div>
+      </nav>
+    </header>
+    <main class="auth-shell">
+      <div class="auth-stack">
+        <form class="panel auth-card" onsubmit="mockLogin(event)">
+          <h1>Inloggen</h1>
+          <p class="lead">Log in met je eigen lokale account of gebruik het demo-verhuurdersaccount.</p>
+          <div class="field" style="margin-top:24px;"><label>E-mail</label><input name="email" type="email" value="host@nordicboatstays.test"></div>
+          <div class="field" style="margin-top:14px;"><label>Wachtwoord</label><input name="password" type="password" value="demo1234"></div>
+          <button class="button" style="width:100%;margin-top:18px;" type="submit">Inloggen</button>
+          <p class="lead" data-login-message></p>
+        </form>
+
+        <form class="panel auth-card" onsubmit="mockRegister(event)">
+          <h2>Nieuw account</h2>
+          <p class="lead">Maak een lokaal MVP-account aan. Je account, huizen, boekingen en berichten blijven in deze browser bewaard.</p>
+          <div class="field" style="margin-top:18px;"><label>Naam</label><input name="name" placeholder="Je naam" required></div>
+          <div class="field" style="margin-top:14px;"><label>E-mail</label><input name="email" type="email" placeholder="naam@example.com" required></div>
+          <div class="field" style="margin-top:14px;"><label>Wachtwoord</label><input name="password" type="password" placeholder="Minimaal 4 tekens" required></div>
+          <div class="field" style="margin-top:14px;"><label>Accounttype</label><select name="role"><option value="guest">Huurder</option><option value="host">Verhuurder</option></select></div>
+          <button class="button secondary" style="width:100%;margin-top:18px;" type="submit">Account aanmaken</button>
+          <p class="lead" data-register-message></p>
+        </form>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

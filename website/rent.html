@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verhuren | Nordic Boat Stays</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/nordic-boat-stays-logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="index.html"><img class="brand-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><span>Nordic Boat Stays</span></a>
+        <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Zoeken</a><a aria-current="page" href="rent.html">Verhuren</a><a href="messages.html">Berichten</a><a href="bookings.html">Boekingen</a><a href="favorites.html">Favorieten</a><a href="contact.html">Contact</a></div>
+        <div class="nav-actions"><a class="button secondary" href="login.html">Inloggen</a><a class="button" href="rent.html">Verhuren</a></div>
+      </nav>
+    </header>
+    <main class="page-shell">
+      <div class="dashboard-layout">
+        <aside class="panel side-nav">
+          <a aria-current="page" href="rent.html">Dashboard</a>
+          <a href="new-listing.html">Huis toevoegen</a>
+          <a href="#boekingen">Boekingen</a>
+          <a href="#beschikbaarheid">Beschikbaarheid</a>
+          <a href="messages.html">Berichten</a>
+          <a href="login.html">Account</a>
+        </aside>
+        <section>
+          <div class="section-head dashboard-head">
+            <div>
+              <h1>Verhuurdersdashboard</h1>
+              <p class="lead">Bekijk welke huizen live staan, wanneer de eerstvolgende boekingen zijn en wat aandacht nodig heeft.</p>
+            </div>
+            <a class="button" href="new-listing.html">Huis toevoegen</a>
+          </div>
+          <div class="stats" style="margin-top:24px;" data-host-stats></div>
+          <section class="dashboard-section">
+            <div class="section-head compact-head">
+              <div>
+                <h2>Jouw huizen op de website</h2>
+                <p class="lead">Dit zijn de accommodaties die zichtbaar zijn voor huurders.</p>
+              </div>
+            </div>
+          </section>
+          <div data-host-listings style="display:grid;gap:14px;margin-bottom:24px;"></div>
+          <section class="panel" id="boekingen" style="margin-bottom:24px;">
+            <h2>Boekingen per huis</h2>
+            <p class="lead">Per accommodatie staan de boekingen chronologisch op aankomstdatum, zodat je snel ziet wat eerst komt.</p>
+            <div style="display:grid;gap:12px;margin-top:18px;" data-host-bookings></div>
+          </section>
+          <section class="panel" id="beschikbaarheid" style="margin-bottom:24px;">
+            <h2>Beschikbaarheid</h2>
+            <p class="lead">Voor verhuurders is direct zichtbaar wanneer een huis bezet is of alleen nog in aanvraag staat.</p>
+            <div style="margin-top:18px;" data-host-availability></div>
+          </section>
+        </section>
+      </div>
+    </main>
+    <footer class="footer"><div class="footer-inner"><div class="footer-brand"><img class="footer-logo" src="assets/nordic-boat-stays-logo.svg" alt="" aria-hidden="true"><strong>Nordic Boat Stays</strong></div><div>Verhuurderspagina apart van zoeken en boeken.</div><div><a href="login.html">Inloggen</a></div></div></footer>
+    <script src="app.js"></script>
+  </body>
+</html>
