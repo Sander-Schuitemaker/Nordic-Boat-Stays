@@ -41,6 +41,16 @@ Publish directory: .
 
 Daarna krijg je een publieke Netlify-link. Als je later een domein koopt, koppel je die in Netlify onder **Domain management**.
 
+### Als Netlify de Next.js-plugin probeert te gebruiken
+
+Deze repository bevat ook een Next.js/backend-startpunt in `src/`. Voor de snelle demo moet Netlify die niet bouwen. Als je een fout ziet zoals `@netlify/plugin-nextjs plugin failed`, zet dan in Netlify bij **Environment variables** deze variabele:
+
+```txt
+NETLIFY_NEXT_PLUGIN_SKIP=true
+```
+
+Deze variabele moet in Netlify zelf staan, niet alleen in `netlify.toml`.
+
 ## Route 2: echte productieversie met Next.js
 
 Deze route is nodig als echte gebruikers accounts, boekingen, berichten, betalingen en uploads moeten delen.
