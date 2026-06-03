@@ -32,8 +32,9 @@ Wat nog demo blijft:
 6. Controleer deze instellingen:
 
 ```txt
-Build command: leeg
-Publish directory: website
+Base directory: website
+Build command: echo 'Deploying static Nordic Boat Stays demo'
+Publish directory: .
 ```
 
 7. Klik **Deploy site**.
@@ -110,4 +111,3 @@ Voor echte backend-functionaliteit werken we vooral in:
 ## Belangrijke keuze
 
 Gebruik de statische demo om snel publiek te tonen wat je bedoelt. Gebruik de Next.js-app zodra mensen echt moeten registreren, betalen, berichten sturen en huizen beheren met gedeelde data.
-

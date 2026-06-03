@@ -30,7 +30,7 @@ Open daarna `http://localhost:3000`.
 
 ## Snel online zetten
 
-Voor een snelle publieke demo kun je de huidige statische site in `website/` deployen met Netlify. De root bevat hiervoor `netlify.toml`; Netlify publiceert dan automatisch de map `website`.
+Voor een snelle publieke demo kun je de huidige statische site in `website/` deployen met Netlify. De root bevat hiervoor `netlify.toml`; Netlify gebruikt `website/` als base directory en publiceert daaruit de statische bestanden.
 
 Lees de volledige uitleg in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 Voor blijven aanpassen met AI staat er een aparte werkwijze in [`docs/AI_WORKFLOW.md`](docs/AI_WORKFLOW.md).

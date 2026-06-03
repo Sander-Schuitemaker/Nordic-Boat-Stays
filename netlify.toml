@@ -1,5 +1,6 @@
 [build]
-  publish = "website"
+  base = "website"
+  publish = "."
   command = "echo 'Deploying static Nordic Boat Stays demo'"
 
 [build.environment]
