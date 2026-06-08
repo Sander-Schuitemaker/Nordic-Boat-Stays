@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { destroySession, requireUser } from "@/lib/auth";
 import {
   applyAsHost,
+  deactivateAccount,
   publicPasswordResetResult,
   registerUser,
   toProfileUpdates,
@@ -535,6 +536,59 @@ export async function markConversationReadAction(conversationId: string) {
     .is("read_at", null);
 
   revalidatePath("/messages");
+}
+
+function deactivationErrorMessage(error: unknown): string {
+  const message =
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+      ? error.message
+      : "";
+
+  if (message.includes("ACCOUNT_HAS_ACTIVE_BOOKINGS")) {
+    return "Je account kan niet worden gedeactiveerd zolang er actieve boekingen zijn.";
+  }
+  if (message.includes("ACCOUNT_HAS_OPEN_PAYOUTS")) {
+    return "Je account kan niet worden gedeactiveerd zolang er open uitbetalingen zijn.";
+  }
+
+  return "Je account kon niet worden gedeactiveerd. Neem contact op met support.";
+}
+
+export async function deactivateAccountAction(
+  _: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const confirmation = String(formData.get("confirmation") ?? "");
+  await requireUser();
+  const supabase = await getConfiguredClient();
+  if (!supabase) {
+    return { error: "Accountdeactivatie is nog niet beschikbaar." };
+  }
+
+  try {
+    await deactivateAccount(
+      {
+        async deactivate() {
+          const { error } = await supabase.rpc("deactivate_my_account", {});
+          if (error) {
+            throw error;
+          }
+        },
+      },
+      confirmation,
+    );
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("Typ exact")) {
+      return { error: error.message };
+    }
+    return { error: deactivationErrorMessage(error) };
+  }
+
+  await supabase.auth.signOut({ scope: "global" });
+  redirect("/account-deactivated");
 }
 
 export async function logoutAction() {

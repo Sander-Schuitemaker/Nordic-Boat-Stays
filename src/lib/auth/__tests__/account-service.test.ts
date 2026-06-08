@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   applyAsHost,
+  deactivateAccount,
   publicPasswordResetResult,
   registerUser,
   setUserRole,
@@ -178,5 +179,20 @@ describe("admin account mutations", () => {
         },
       ),
     ).rejects.toThrow("Je kunt je eigen beheerrol niet verwijderen.");
+  });
+});
+
+describe("account deactivation", () => {
+  it("requires the exact Dutch confirmation phrase", async () => {
+    await expect(
+      deactivateAccount(
+        {
+          async deactivate() {
+            throw new Error("gateway should not be called");
+          },
+        },
+        "verwijder mij",
+      ),
+    ).rejects.toThrow("Typ exact VERWIJDER MI");
   });
 });

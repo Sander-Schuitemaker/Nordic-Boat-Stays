@@ -1,3 +1,4 @@
+import { AccountDeactivationForm } from "@/components/account/account-deactivation-form";
 import { SecurityPanel } from "@/components/account/security-panel";
 import { requireUser } from "@/lib/auth";
 
@@ -13,6 +14,7 @@ export default async function SecurityPage() {
         </p>
       </div>
       <SecurityPanel user={user} />
+      <AccountDeactivationForm />
     </div>
   );
 }

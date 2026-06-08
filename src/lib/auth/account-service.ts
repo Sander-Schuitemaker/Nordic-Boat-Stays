@@ -188,3 +188,18 @@ export async function setUserRole(
     reason: input.reason.trim(),
   });
 }
+
+export type AccountDeactivationGateway = {
+  deactivate(): Promise<void>;
+};
+
+export async function deactivateAccount(
+  gateway: AccountDeactivationGateway,
+  confirmation: string,
+) {
+  if (confirmation !== "VERWIJDER MI") {
+    throw new Error("Typ exact VERWIJDER MI om door te gaan.");
+  }
+
+  await gateway.deactivate();
+}
