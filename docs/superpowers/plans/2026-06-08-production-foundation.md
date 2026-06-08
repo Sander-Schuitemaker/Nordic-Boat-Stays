@@ -205,7 +205,7 @@ SUPABASE_SECRET_KEY="sb_secret_replace_me"
 STRIPE_SECRET_KEY="sk_test_replace_me"
 STRIPE_WEBHOOK_SECRET="whsec_replace_me"
 STRIPE_CONNECT_WEBHOOK_SECRET="whsec_replace_me"
-STRIPE_API_VERSION="2026-02-25.clover"
+STRIPE_API_VERSION="2026-05-27.dahlia"
 ```
 
 - [x] **Step 5: Run tests**
@@ -617,7 +617,7 @@ git commit -m "feat: replace mock auth with Supabase"
 - Create: `src/lib/payments/__tests__/provider.test.ts`
 - Delete: `src/lib/payment-service.ts`
 
-- [ ] **Step 1: Write money tests**
+- [x] **Step 1: Write money tests**
 
 Required assertions:
 
@@ -633,11 +633,11 @@ expect(calculateFees(100_000)).toEqual({
 
 Also test odd-cent rounding and reject negative values.
 
-- [ ] **Step 2: Implement integer money helpers**
+- [x] **Step 2: Implement integer money helpers**
 
 No floating point amounts. `calculateFees` accepts cents and basis points and rounds half away from zero using integer arithmetic.
 
-- [ ] **Step 3: Define payment contracts**
+- [x] **Step 3: Define payment contracts**
 
 ```ts
 interface PaymentProvider {
@@ -651,15 +651,15 @@ interface PaymentProvider {
 
 Every mutating input includes an idempotency key.
 
-- [ ] **Step 4: Add Stripe singleton**
+- [x] **Step 4: Add Stripe singleton**
 
 Use the current pinned API version from environment. Instantiate only server-side. Do not create Checkout or transfer logic yet; this phase establishes typed helpers and account configuration.
 
-- [ ] **Step 5: Add safe provider selection**
+- [x] **Step 5: Add safe provider selection**
 
 When Stripe is configured, return the Stripe provider. Otherwise return an unavailable provider whose mutating calls throw `PaymentProviderNotConfiguredError`. Never silently authorize mock money in production code.
 
-- [ ] **Step 6: Run tests**
+- [x] **Step 6: Run tests**
 
 Run:
 
@@ -670,11 +670,11 @@ npm run typecheck
 
 Expected: PASS.
 
-- [ ] **Step 7: Remove mock payment service**
+- [x] **Step 7: Remove mock payment service**
 
 Confirm no imports remain, then delete `src/lib/payment-service.ts`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/lib/money.ts src/lib/__tests__/money.test.ts src/lib/payments

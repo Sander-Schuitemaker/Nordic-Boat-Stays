@@ -2,6 +2,8 @@ import { z } from "zod";
 
 type EnvInput = Record<string, unknown>;
 
+export const STRIPE_API_VERSION = "2026-05-27.dahlia" as const;
+
 export type PublicEnv = {
   configured: boolean;
   url: string | null;
@@ -16,7 +18,7 @@ export type ServerEnv = {
   stripeSecretKey: string;
   stripeWebhookSecret: string;
   stripeConnectWebhookSecret: string;
-  stripeApiVersion: string;
+  stripeApiVersion: typeof STRIPE_API_VERSION;
 };
 
 export type SupabaseServerEnv = {
@@ -30,7 +32,7 @@ export type StripeEnv = {
   stripeSecretKey: string;
   stripeWebhookSecret: string;
   stripeConnectWebhookSecret: string;
-  stripeApiVersion: string;
+  stripeApiVersion: typeof STRIPE_API_VERSION;
 };
 
 const publicUrlSchema = z.string().url();
@@ -48,7 +50,7 @@ const stripeSchema = z.object({
   STRIPE_SECRET_KEY: z.string().min(1),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
   STRIPE_CONNECT_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
-  STRIPE_API_VERSION: z.string().min(1),
+  STRIPE_API_VERSION: z.literal(STRIPE_API_VERSION),
 });
 
 function present(value: unknown): value is string {

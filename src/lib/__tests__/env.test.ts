@@ -51,7 +51,7 @@ describe("parseServerEnv", () => {
     STRIPE_SECRET_KEY: "sk_test_example",
     STRIPE_WEBHOOK_SECRET: "whsec_platform",
     STRIPE_CONNECT_WEBHOOK_SECRET: "whsec_connect",
-    STRIPE_API_VERSION: "2026-02-25.clover",
+    STRIPE_API_VERSION: "2026-05-27.dahlia",
   };
 
   it("parses complete sandbox configuration", () => {
@@ -92,6 +92,15 @@ describe("parseServerEnv", () => {
       expect(String(error)).not.toContain(invalidSecret);
     }
   });
+
+  it("rejects an API version that does not match the installed Stripe SDK", () => {
+    expect(() =>
+      parseStripeEnv({
+        ...validDevelopmentEnv,
+        STRIPE_API_VERSION: "2026-02-25.clover",
+      }),
+    ).toThrow("Stripe-serverconfiguratie is ongeldig.");
+  });
 });
 
 describe("integration-specific server configuration", () => {
@@ -117,14 +126,14 @@ describe("integration-specific server configuration", () => {
         STRIPE_SECRET_KEY: "sk_test_example",
         STRIPE_WEBHOOK_SECRET: "whsec_platform",
         STRIPE_CONNECT_WEBHOOK_SECRET: "whsec_connect",
-        STRIPE_API_VERSION: "2026-02-25.clover",
+        STRIPE_API_VERSION: "2026-05-27.dahlia",
       }),
     ).toEqual({
       appUrl: "http://localhost:3000",
       stripeSecretKey: "sk_test_example",
       stripeWebhookSecret: "whsec_platform",
       stripeConnectWebhookSecret: "whsec_connect",
-      stripeApiVersion: "2026-02-25.clover",
+      stripeApiVersion: "2026-05-27.dahlia",
     });
   });
 });
