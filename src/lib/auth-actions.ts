@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
 import { destroySession, requireUser } from "@/lib/auth";
 import {
@@ -12,6 +13,11 @@ import {
   toProfileUpdates,
 } from "@/lib/auth/account-service";
 import { safeInternalPath } from "@/lib/auth/redirects";
+import {
+  AuthRateLimitError,
+  enforceAuthRateLimit,
+  recordAuthAttempt,
+} from "@/lib/auth/rate-limit";
 import {
   forgotPasswordSchema,
   hostApplicationSchema,
@@ -70,6 +76,16 @@ async function getConfiguredClient() {
   }
 }
 
+async function requestIpAddress(): Promise<string | null> {
+  const requestHeaders = await headers();
+  return (
+    requestHeaders.get("x-nf-client-connection-ip") ??
+    requestHeaders.get("x-real-ip") ??
+    requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    null
+  );
+}
+
 export async function loginAction(
   _: AuthActionState,
   formData: FormData,
@@ -90,6 +106,21 @@ export async function loginAction(
       error: "Inloggen wordt beschikbaar zodra Supabase is gekoppeld.",
     };
   }
+  const ipAddress = await requestIpAddress();
+
+  try {
+    await enforceAuthRateLimit({
+      email: parsed.data.email,
+      ipAddress,
+    });
+  } catch (error) {
+    return {
+      error:
+        error instanceof AuthRateLimitError
+          ? error.message
+          : "Inloggen is tijdelijk niet beschikbaar. Probeer het straks opnieuw.",
+    };
+  }
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
@@ -97,8 +128,26 @@ export async function loginAction(
   });
 
   if (error || !data.user) {
+    await recordAuthAttempt({
+      email: parsed.data.email,
+      ipAddress,
+      success: false,
+      failureReason: "invalid_credentials",
+    });
     return { error: authErrorMessage(error?.message ?? "") };
   }
+
+  await Promise.all([
+    recordAuthAttempt({
+      email: parsed.data.email,
+      ipAddress,
+      success: true,
+    }),
+    supabase
+      .from("users")
+      .update({ last_login_at: new Date().toISOString() })
+      .eq("id", data.user.id),
+  ]);
 
   const { data: profile } = await supabase
     .from("users")
