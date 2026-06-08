@@ -1006,3 +1006,17 @@ Update this plan with:
 - external Supabase/SMTP blockers;
 - exact staging URL;
 - remaining production-hardening work.
+
+## Verification Result - 2026-06-09
+
+- Unit and architecture tests: `78/78` passed across `16` test files.
+- TypeScript: `npm run typecheck` passed.
+- Production build: `npm run build` passed and generated all account, host and admin routes.
+- Dependency audit: `npm audit --omit=dev` reported `0` vulnerabilities.
+- SQL syntax: account migrations `202606090001` through `202606090003` parsed successfully with `libpg_query`.
+- Browser QA: registration, unavailable-Supabase feedback, login, password recovery, missing recovery session, protected account redirect and protected admin redirect were checked without console errors.
+- Responsive QA: the registration surface reported no horizontal overflow at `375px` and `1440px`.
+- Screenshot blocker: the in-app browser DOM and console APIs worked, but `Page.captureScreenshot` timed out.
+- Database runtime blocker: Docker is not installed in the current environment, so `supabase db reset` and pgTAP/RLS execution were not run locally.
+- External staging blocker: no Supabase staging project, SMTP credentials or staging URL are configured in this workspace.
+- Required staging checks: apply all migrations, run pgTAP/RLS tests, verify real e-mail callbacks, test TOTP/AAL2 admin mutations, and validate user isolation with at least two real accounts.
