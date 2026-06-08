@@ -517,7 +517,7 @@ git commit -m "feat: secure marketplace data with RLS"
 - Modify: `src/app/dashboard/layout.tsx`
 - Delete: `src/lib/password.ts`
 
-- [ ] **Step 1: Write authorization tests**
+- [x] **Step 1: Write authorization tests**
 
 Test pure helpers:
 
@@ -527,7 +527,7 @@ expect(canAccessDashboard({ role: "guest", status: "active" })).toBe(false);
 expect(canAccessDashboard({ role: "admin", status: "blocked" })).toBe(false);
 ```
 
-- [ ] **Step 2: Confirm failure**
+- [x] **Step 2: Confirm failure**
 
 Run:
 
@@ -537,7 +537,7 @@ npx vitest run src/lib/auth/__tests__/authorization.test.ts
 
 Expected: FAIL because helpers do not exist.
 
-- [ ] **Step 3: Implement application user lookup**
+- [x] **Step 3: Implement application user lookup**
 
 `getCurrentUser` calls Supabase `auth.getUser()`, then selects the matching `public.users` row. Return:
 
@@ -551,7 +551,7 @@ type AppUser = {
 };
 ```
 
-- [ ] **Step 4: Keep an auth compatibility facade**
+- [x] **Step 4: Keep an auth compatibility facade**
 
 `src/lib/auth.ts` exports:
 
@@ -565,7 +565,7 @@ destroySession
 
 The facade redirects blocked users to `/login?error=account-blocked`.
 
-- [ ] **Step 5: Replace auth actions**
+- [x] **Step 5: Replace auth actions**
 
 - Login uses `signInWithPassword`.
 - Registration uses `signUp` with `full_name` and safe `requested_role`.
@@ -574,15 +574,15 @@ The facade redirects blocked users to `/login?error=account-blocked`.
 - Password length becomes at least 10 characters.
 - Errors are translated into safe Dutch messages.
 
-- [ ] **Step 6: Update forms**
+- [x] **Step 6: Update forms**
 
 Remove demo credentials. Add e-mail confirmation feedback and clear password requirements. Preserve the existing visual language.
 
-- [ ] **Step 7: Update layouts**
+- [x] **Step 7: Update layouts**
 
 Use `fullName`, lowercase roles and Supabase logout. Dashboard layout allows active host/admin only.
 
-- [ ] **Step 8: Run tests and typecheck**
+- [x] **Step 8: Run tests and typecheck**
 
 Run:
 
@@ -593,11 +593,11 @@ npm run typecheck
 
 Expected: PASS.
 
-- [ ] **Step 9: Remove password hashing**
+- [x] **Step 9: Remove password hashing**
 
 Delete `src/lib/password.ts` after `rg "password|hashPassword|verifyPassword" src` confirms there are no imports.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add src/lib/auth.ts src/lib/auth-actions.ts src/lib/auth src/components/auth/auth-forms.tsx src/app/layout.tsx src/app/dashboard/layout.tsx

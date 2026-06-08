@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { listings, regions } from "../src/lib/data";
-import { hashPassword } from "../src/lib/password";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +21,7 @@ async function main() {
     data: {
       email: "host@nordicboatstays.test",
       name: "Nordic Boat Stays Host",
-      passwordHash: hashPassword("demo1234"),
+      passwordHash: "supabase-managed",
       role: "HOST",
       profile: {
         create: {
@@ -37,7 +36,7 @@ async function main() {
     data: {
       email: "gast@nordicboatstays.test",
       name: "Demo Gast",
-      passwordHash: hashPassword("demo1234"),
+      passwordHash: "supabase-managed",
       role: "GUEST"
     }
   });

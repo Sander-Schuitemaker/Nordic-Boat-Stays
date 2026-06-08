@@ -54,7 +54,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <Button asChild variant="outline" className="hidden sm:inline-flex">
                 <Link href={user ? "/dashboard" : "/login"}>
                   <UserRound className="size-4" />
-                  {user ? user.name : "Inloggen"}
+                  {user ? user.fullName : "Inloggen"}
                 </Link>
               </Button>
               {user ? (
@@ -72,8 +72,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <p className="font-semibold text-foreground">Nordic Boat Stays</p>
               <p className="mt-2">Vakantiehuizen in Noorwegen, altijd met boot.</p>
             </div>
-            <p>Backend-login met Prisma, HTTP-only sessies en mock-payments. Klaar om Stripe later te koppelen.</p>
-            <p className="md:text-right">Gebouwd met Next.js, Prisma, Tailwind en Leaflet.</p>
+            <p>Veilig boeken met geverifieerde verhuurders, beschermde betalingen en duidelijke bootinformatie.</p>
+            <p className="md:text-right">Gebouwd met Next.js, Supabase, Stripe en PostgreSQL.</p>
           </div>
         </footer>
       </body>

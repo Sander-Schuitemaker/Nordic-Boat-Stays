@@ -15,7 +15,7 @@ function slugify(value: string) {
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
-  if (!user || (user.role !== "HOST" && user.role !== "ADMIN")) {
+  if (!user || (user.role !== "host" && user.role !== "admin")) {
     return NextResponse.json({ error: "Log in als verhuurder om een huis toe te voegen." }, { status: 401 });
   }
   const body = await request.json();
