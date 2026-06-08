@@ -1,9 +1,12 @@
 import type { z } from "zod";
 
 import type {
+  AccountStatus,
   AppRole,
+  AssuranceLevel,
   HostAccountStatus,
 } from "@/lib/auth/authorization";
+import { canPerformAdminAction } from "@/lib/auth/authorization";
 import {
   hostApplicationSchema,
   profileSchema,
@@ -102,4 +105,86 @@ export async function applyAsHost(
     roles: Array.from(new Set<AppRole>([...user.roles, "host"])),
     hostStatus: result.hostStatus,
   };
+}
+
+export type AdminStatusGateway = {
+  setStatus(input: {
+    targetUserId: string;
+    status: AccountStatus;
+    reason: string;
+  }): Promise<void>;
+};
+
+type AdminActor = {
+  id: string;
+  status: AccountStatus;
+  roles: readonly AppRole[];
+  assuranceLevel: AssuranceLevel;
+};
+
+export async function setUserStatus(
+  gateway: AdminStatusGateway,
+  actor: AdminActor,
+  input: {
+    targetUserId: string;
+    status: AccountStatus;
+    reason: string;
+  },
+) {
+  if (!canPerformAdminAction({ ...actor, roles: [...actor.roles] })) {
+    throw new Error("Extra beveiligingscontrole vereist.");
+  }
+
+  if (input.reason.trim().length < 10) {
+    throw new Error("Geef een duidelijke reden van minimaal 10 tekens.");
+  }
+
+  await gateway.setStatus({
+    targetUserId: input.targetUserId,
+    status: input.status,
+    reason: input.reason.trim(),
+  });
+}
+
+export type AdminRoleGateway = {
+  setRole(input: {
+    targetUserId: string;
+    role: AppRole;
+    enabled: boolean;
+    reason: string;
+  }): Promise<void>;
+};
+
+export async function setUserRole(
+  gateway: AdminRoleGateway,
+  actor: AdminActor,
+  input: {
+    targetUserId: string;
+    role: AppRole;
+    enabled: boolean;
+    reason: string;
+  },
+) {
+  if (!canPerformAdminAction({ ...actor, roles: [...actor.roles] })) {
+    throw new Error("Extra beveiligingscontrole vereist.");
+  }
+
+  if (
+    actor.id === input.targetUserId &&
+    input.role === "admin" &&
+    !input.enabled
+  ) {
+    throw new Error("Je kunt je eigen beheerrol niet verwijderen.");
+  }
+
+  if (input.reason.trim().length < 10) {
+    throw new Error("Geef een duidelijke reden van minimaal 10 tekens.");
+  }
+
+  await gateway.setRole({
+    targetUserId: input.targetUserId,
+    role: input.role,
+    enabled: input.enabled,
+    reason: input.reason.trim(),
+  });
 }

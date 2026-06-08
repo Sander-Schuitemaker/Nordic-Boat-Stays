@@ -4,6 +4,8 @@ import {
   applyAsHost,
   publicPasswordResetResult,
   registerUser,
+  setUserRole,
+  setUserStatus,
   toProfileUpdates,
   type AuthGateway,
   type SignUpRequest,
@@ -125,5 +127,56 @@ describe("host application", () => {
 
     expect(result.roles).toEqual(["guest", "host"]);
     expect(result.hostStatus).toBe("pending_verification");
+  });
+});
+
+describe("admin account mutations", () => {
+  it("rejects an admin status change at aal1", async () => {
+    await expect(
+      setUserStatus(
+        {
+          async setStatus() {
+            throw new Error("gateway should not be called");
+          },
+        },
+        {
+          id: "9a39d5c9-ab63-4c04-81e2-2cb35e95bd83",
+          status: "active",
+          roles: ["guest", "admin"],
+          assuranceLevel: "aal1",
+        },
+        {
+          targetUserId: "2648cbcf-e8f1-4854-a6e8-ef558b294a43",
+          status: "suspended",
+          reason: "Verdachte accountactiviteit onderzocht.",
+        },
+      ),
+    ).rejects.toThrow("Extra beveiligingscontrole vereist.");
+  });
+
+  it("prevents an admin from removing their own admin role", async () => {
+    const actor = {
+      id: "9a39d5c9-ab63-4c04-81e2-2cb35e95bd83",
+      status: "active" as const,
+      roles: ["guest", "admin"] as const,
+      assuranceLevel: "aal2" as const,
+    };
+
+    await expect(
+      setUserRole(
+        {
+          async setRole() {
+            throw new Error("gateway should not be called");
+          },
+        },
+        actor,
+        {
+          targetUserId: actor.id,
+          role: "admin",
+          enabled: false,
+          reason: "Eigen beheerrol verwijderen.",
+        },
+      ),
+    ).rejects.toThrow("Je kunt je eigen beheerrol niet verwijderen.");
   });
 });

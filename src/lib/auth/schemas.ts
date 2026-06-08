@@ -79,6 +79,23 @@ export const messageSchema = z.object({
   body: z.string().trim().min(1).max(10000),
 });
 
+export const adminStatusMutationSchema = z.object({
+  status: z.enum([
+    "pending_email_verification",
+    "active",
+    "suspended",
+    "deactivated",
+    "deleted",
+  ]),
+  reason: z.string().trim().min(10).max(1000),
+});
+
+export const adminRoleMutationSchema = z.object({
+  role: z.enum(["guest", "host", "admin"]),
+  enabled: z.boolean(),
+  reason: z.string().trim().min(10).max(1000),
+});
+
 export const hostApplicationSchema = z.object({
   hostName: z.string().trim().min(2).max(100),
   hostType: z.enum(["individual", "company"]),
