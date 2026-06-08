@@ -396,7 +396,7 @@ git commit -m "feat: add marketplace database schema"
 **Files:**
 - Create: `supabase/migrations/202606080005_constraints_functions.sql`
 
-- [ ] **Step 1: Add the overlap constraint**
+- [x] **Step 1: Add the overlap constraint**
 
 Create the partial GiST exclusion constraint:
 
@@ -410,11 +410,11 @@ exclude using gist (
 where (status = 'active');
 ```
 
-- [ ] **Step 2: Add `handle_new_user` trigger**
+- [x] **Step 2: Add `handle_new_user` trigger**
 
 Insert `public.users` after a new `auth.users` row. Accept only `guest` or `host` from metadata and default to `guest`. Never permit signup metadata to create an admin.
 
-- [ ] **Step 3: Add authorization helpers**
+- [x] **Step 3: Add authorization helpers**
 
 Create private or security-definer helpers with fixed search paths:
 
@@ -426,19 +426,19 @@ private.participates_in_booking(uuid)
 private.participates_in_conversation(uuid)
 ```
 
-- [ ] **Step 4: Add `create_booking_hold` RPC**
+- [x] **Step 4: Add `create_booking_hold` RPC**
 
 The function validates listing status, max guests, host verification and date order; calculates the immutable base fee snapshot; creates `pending_payment` booking/payment/payout rows; inserts a 30-minute availability hold; and returns booking and payment IDs. An overlap raises a stable `DATES_UNAVAILABLE` error.
 
-- [ ] **Step 5: Add job claim function**
+- [x] **Step 5: Add job claim function**
 
 Create `private.claim_outbox_jobs(limit integer)` using `FOR UPDATE SKIP LOCKED`. Increment attempts and set `locked_at`.
 
-- [ ] **Step 6: Add database-level verification tests**
+- [x] **Step 6: Add database-level verification tests**
 
 Use a SQL test script or `psql` commands to insert two overlapping active periods for the same listing. The first insert succeeds and the second fails with `availability_no_overlap`. A non-overlapping range succeeds.
 
-- [ ] **Step 7: Reset and verify**
+- [ ] **Step 7: Reset and verify (blocked: Docker is not installed; SQL parser passes)**
 
 Run:
 
@@ -448,7 +448,7 @@ npx supabase db reset
 
 Expected: migrations apply and the overlap reproduction behaves as specified.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add supabase/migrations/202606080005_constraints_functions.sql
