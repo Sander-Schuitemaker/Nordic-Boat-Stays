@@ -1,3 +1,5 @@
+"use client";
+
 import dynamic from "next/dynamic";
 
 export const DynamicNorwayMap = dynamic(() => import("@/components/map/norway-map").then((mod) => mod.NorwayMap), {
