@@ -734,7 +734,7 @@ git commit -m "docs: add production foundation setup"
 **Files:**
 - No new files unless a verification failure requires a focused fix.
 
-- [ ] **Step 1: Run unit tests**
+- [x] **Step 1: Run unit tests**
 
 ```bash
 npm test
@@ -742,7 +742,7 @@ npm test
 
 Expected: all tests pass.
 
-- [ ] **Step 2: Run typecheck**
+- [x] **Step 2: Run typecheck**
 
 ```bash
 npm run typecheck
@@ -750,7 +750,7 @@ npm run typecheck
 
 Expected: exit code 0.
 
-- [ ] **Step 3: Reset local database**
+- [ ] **Step 3: Reset local database (blocked: Docker is not installed)**
 
 ```bash
 npx supabase db reset
@@ -758,7 +758,7 @@ npx supabase db reset
 
 Expected: all migrations and seed hooks complete successfully.
 
-- [ ] **Step 4: Build Next.js**
+- [x] **Step 4: Build Next.js**
 
 Use valid local Supabase variables and Stripe test placeholders:
 
@@ -768,7 +768,7 @@ npm run build
 
 Expected: production build completes. Routes that require an unavailable external account show a controlled configuration state rather than crashing public pages.
 
-- [ ] **Step 5: Inspect git state**
+- [x] **Step 5: Inspect git state**
 
 ```bash
 git status --short
@@ -777,7 +777,7 @@ git diff --check
 
 Expected: no uncommitted production changes and no whitespace errors.
 
-- [ ] **Step 6: Record phase result**
+- [x] **Step 6: Record phase result**
 
 Update the implementation checklist in this plan, record any external account blockers, and prepare the next plan:
 
@@ -787,3 +787,15 @@ Phase 3: atomic booking and Stripe Checkout
 Phase 4: host/admin operations, payouts and disputes
 Phase 5: production hardening and launch
 ```
+
+## Phase Result - 2026-06-08
+
+- 34 unit and architecture tests pass.
+- TypeScript passes with `tsc --noEmit`.
+- Next.js 15.5.19 production build passes.
+- Production dependency audit reports zero vulnerabilities.
+- All migrations, seed SQL and database test scripts pass PostgreSQL syntax parsing.
+- `supabase db reset`, generated remote types and live RLS execution remain blocked until Docker or a linked Supabase staging project is available.
+- The current Netlify static demo configuration was not changed.
+
+Next implementation plan: Phase 2 migrates listing/search reads and writes from Prisma/static data to Supabase before Stripe Checkout is activated.
