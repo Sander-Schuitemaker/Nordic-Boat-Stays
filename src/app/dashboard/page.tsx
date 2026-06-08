@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireHost } from "@/lib/auth";
 import { canPublishListing } from "@/lib/auth/authorization";
-import { prisma } from "@/lib/db";
+import { getMyHostBookings, getMyHostListings } from "@/lib/account-data";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -14,18 +14,10 @@ export default async function DashboardPage() {
   const user = await requireHost();
   const canManageListings = canPublishListing(user);
   const [hostListings, bookings] = await Promise.all([
-    prisma.listing.findMany({
-      where: { hostId: user.id },
-      include: { boat: true },
-      orderBy: { createdAt: "desc" }
-    }),
-    prisma.booking.findMany({
-      where: { listing: { hostId: user.id } },
-      include: { listing: true, user: true },
-      orderBy: { createdAt: "desc" }
-    })
+    getMyHostListings(),
+    getMyHostBookings(),
   ]);
-  const revenue = bookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
+  const revenue = bookings.reduce((sum, booking) => sum + booking.totalCents, 0);
 
   return (
     <div className="flex flex-col gap-6">
@@ -46,8 +38,8 @@ export default async function DashboardPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         <Card><CardHeader><CardTitle>Jouw huizen</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{hostListings.length}</CardContent></Card>
-        <Card><CardHeader><CardTitle>Open aanvragen</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{bookings.filter((item) => item.status === "pending").length}</CardContent></Card>
-        <Card><CardHeader><CardTitle>Boekingswaarde</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{formatCurrency(revenue)}</CardContent></Card>
+        <Card><CardHeader><CardTitle>Open boekingen</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{bookings.filter((item) => ["pending_payment", "confirmed", "checked_in"].includes(item.status)).length}</CardContent></Card>
+        <Card><CardHeader><CardTitle>Boekingswaarde</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{formatCurrency(revenue / 100)}</CardContent></Card>
       </div>
       <Card>
         <CardHeader className="gap-3 md:flex-row md:items-center md:justify-between">
@@ -84,7 +76,7 @@ export default async function DashboardPage() {
             <div key={listing.id} className="flex flex-col gap-3 rounded-xl bg-muted p-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="font-semibold">{listing.title}</p>
-                <p className="text-sm text-muted-foreground">{listing.city} · {formatCurrency(listing.pricePerNight)} per nacht · {listing.boat?.type ?? "boot"}</p>
+                <p className="text-sm text-muted-foreground">{listing.city} · {formatCurrency(listing.priceCents / 100)} per nacht · {listing.status}</p>
               </div>
               <Button asChild variant="outline" size="sm">
                 <Link href={`/dashboard/listings/${listing.slug}/edit`}>Bewerken</Link>

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   loginSchema,
+  messageSchema,
   notificationPreferencesSchema,
   profileSchema,
   registerSchema,
@@ -98,6 +99,17 @@ describe("notificationPreferencesSchema", () => {
         messages: true,
         marketing: false,
         isAdmin: true,
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("messageSchema", () => {
+  it("rejects empty messages and invalid conversation identifiers", () => {
+    expect(
+      messageSchema.safeParse({
+        conversationId: "geen-uuid",
+        body: " ",
       }).success,
     ).toBe(false);
   });

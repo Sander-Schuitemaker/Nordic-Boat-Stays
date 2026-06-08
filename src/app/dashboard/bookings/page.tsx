@@ -1,18 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { requireHost } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { getMyHostBookings } from "@/lib/account-data";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardBookingsPage() {
-  const user = await requireHost();
-  const bookings = await prisma.booking.findMany({
-    where: { listing: { hostId: user.id } },
-    include: { listing: true, user: true },
-    orderBy: { createdAt: "desc" }
-  });
+  const bookings = await getMyHostBookings();
 
   return (
     <div>
@@ -24,14 +18,14 @@ export default async function DashboardBookingsPage() {
           {bookings.length ? bookings.map((booking) => (
             <div key={booking.id} className="grid gap-3 rounded-xl bg-muted p-4 md:grid-cols-[1fr_auto] md:items-center">
               <div>
-                <p className="font-semibold">{booking.listing.title}</p>
+                <p className="font-semibold">{booking.listingTitle}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {booking.user.name} · {booking.checkIn.toLocaleDateString("nl-NL")} tot {booking.checkOut.toLocaleDateString("nl-NL")} · {booking.guests} gasten
+                  {new Date(`${booking.checkIn}T12:00:00`).toLocaleDateString("nl-NL")} tot {new Date(`${booking.checkOut}T12:00:00`).toLocaleDateString("nl-NL")} · {booking.guests} gasten
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <Badge>{booking.status}</Badge>
-                <span className="font-semibold">{formatCurrency(booking.totalPrice)}</span>
+                <span className="font-semibold">{formatCurrency(booking.totalCents / 100)}</span>
               </div>
             </div>
           )) : (

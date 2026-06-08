@@ -74,6 +74,11 @@ export const notificationPreferencesSchema = z
   })
   .strict();
 
+export const messageSchema = z.object({
+  conversationId: z.string().uuid(),
+  body: z.string().trim().min(1).max(10000),
+});
+
 export const hostApplicationSchema = z.object({
   hostName: z.string().trim().min(2).max(100),
   hostType: z.enum(["individual", "company"]),

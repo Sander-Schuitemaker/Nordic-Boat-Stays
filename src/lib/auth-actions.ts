@@ -15,6 +15,7 @@ import {
   forgotPasswordSchema,
   hostApplicationSchema,
   loginSchema,
+  messageSchema,
   notificationPreferencesSchema,
   profileSchema,
   registerSchema,
@@ -471,6 +472,69 @@ export async function applyAsHostAction(
   revalidatePath("/account");
   revalidatePath("/dashboard");
   redirect("/dashboard");
+}
+
+export async function sendMessageAction(
+  _: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = messageSchema.safeParse({
+    conversationId: formData.get("conversationId"),
+    body: formData.get("body"),
+  });
+
+  if (!parsed.success) {
+    return { error: "Schrijf eerst een bericht." };
+  }
+
+  const user = await requireUser();
+  const supabase = await getConfiguredClient();
+  if (!supabase) {
+    return { error: "Berichten zijn nog niet beschikbaar." };
+  }
+
+  const { error } = await supabase.from("messages").insert({
+    conversation_id: parsed.data.conversationId,
+    sender_id: user.id,
+    body: parsed.data.body,
+    attachments: [],
+    system_message: false,
+  });
+
+  if (error) {
+    return { error: "Je bericht kon niet worden verzonden." };
+  }
+
+  await supabase
+    .from("conversations")
+    .update({ last_message_at: new Date().toISOString() })
+    .eq("id", parsed.data.conversationId);
+
+  revalidatePath("/messages");
+  revalidatePath(`/messages/${parsed.data.conversationId}`);
+  return { message: "Bericht verzonden." };
+}
+
+export async function markConversationReadAction(conversationId: string) {
+  const parsed = messageSchema.shape.conversationId.safeParse(conversationId);
+  if (!parsed.success) {
+    return;
+  }
+
+  const user = await requireUser();
+  const supabase = await getConfiguredClient();
+  if (!supabase) {
+    return;
+  }
+
+  await supabase
+    .from("messages")
+    .update({ read_at: new Date().toISOString() })
+    .eq("conversation_id", parsed.data)
+    .neq("sender_id", user.id)
+    .is("read_at", null);
+
+  revalidatePath("/messages");
 }
 
 export async function logoutAction() {
