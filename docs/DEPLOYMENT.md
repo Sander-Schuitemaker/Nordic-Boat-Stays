@@ -1,35 +1,17 @@
-# Nordic Boat Stays online zetten
+# Nordic Boat Stays deployen
 
-Dit project heeft twee routes:
+## Twee gescheiden sites
 
-1. **Snelle online demo**: publiceer de statische site in `website/`.
-2. **Echte boekingssite**: bouw door op de Next.js-app in `src/` met Prisma, PostgreSQL, echte login, uploads en betalingen.
+Gebruik voorlopig twee Netlify-sites:
 
-## Route 1: snelste online demo met Netlify
+1. **Publieke demo**: bouwt `website/` via de bestaande `netlify.toml`.
+2. **Productie-app staging**: bouwt de Next.js-app vanuit de repositoryroot.
 
-Deze route zet de huidige visuele site online zoals je hem nu in de browser ziet.
+Zo blijft de zichtbare demo beschikbaar terwijl accounts, database en betalingen worden getest.
 
-Wat werkt:
+## Publieke demo
 
-- homepage, zoeken, detailpagina, verhuurderspagina, berichten, favorieten en vertalen
-- demo-login en demo-data in de browser
-- publicatie-preview voor nieuwe huizen
-
-Wat nog demo blijft:
-
-- accounts worden lokaal in de browser bewaard
-- toegevoegde huizen zijn niet gedeeld met andere bezoekers
-- betalingen zijn mock
-- foto-upload is browser-local en nog geen echte serveropslag
-
-### Stappen
-
-1. Zet dit project in een GitHub repository.
-2. Ga naar Netlify.
-3. Kies **Add new site** > **Import an existing project**.
-4. Koppel je GitHub repository.
-5. Netlify leest automatisch `netlify.toml`.
-6. Controleer deze instellingen:
+De huidige Netlify-site gebruikt:
 
 ```txt
 Base directory: website
@@ -37,87 +19,105 @@ Build command: echo 'Deploying static Nordic Boat Stays demo'
 Publish directory: .
 ```
 
-7. Klik **Deploy site**.
-
-Daarna krijg je een publieke Netlify-link. Als je later een domein koopt, koppel je die in Netlify onder **Domain management**.
-
-### Als Netlify de Next.js-plugin probeert te gebruiken
-
-Deze repository bevat ook een Next.js/backend-startpunt in `src/`. Voor de snelle demo moet Netlify die niet bouwen. Als je een fout ziet zoals `@netlify/plugin-nextjs plugin failed`, zet dan in Netlify bij **Environment variables** deze variabele:
+Laat op deze site voorlopig ook staan:
 
 ```txt
 NETLIFY_NEXT_PLUGIN_SKIP=true
 ```
 
-Deze variabele moet in Netlify zelf staan, niet alleen in `netlify.toml`.
+Deze site bevat browserdata en is geen echte boekingsbackend.
 
-## Route 2: echte productieversie met Next.js
+## Aparte Next.js-staging
 
-Deze route is nodig als echte gebruikers accounts, boekingen, berichten, betalingen en uploads moeten delen.
+Maak pas een tweede Netlify-site wanneer er een Supabase-stagingproject en Stripe-testsleutels zijn.
 
-Aanbevolen setup:
+De staging-build gebruikt:
 
-- Hosting: Vercel of Netlify
-- Database: Neon, Supabase of Railway PostgreSQL
-- Auth: huidige backend-login uitbreiden of later NextAuth/Clerk
-- Foto-opslag: Cloudinary, Supabase Storage of S3
-- Payments: Stripe Checkout
-- Vertalen: DeepL/Google Translate API of handmatige CMS-vertalingen
-
-### Productiestappen
-
-1. Zet `DATABASE_URL` en `AUTH_SECRET` in de hosting environment.
-2. Draai database migrations:
-
-```bash
-npx prisma migrate deploy
+```txt
+Base directory: leeg
+Build command: npm run build
+Publish directory: .next
+Node.js: 22
 ```
 
-3. Seed demo-data als dat nodig is:
+Netlify detecteert Next.js en installeert de Next-runtime automatisch. SSR, API-routes en `middleware.ts` worden door die runtime vertaald.
 
-```bash
-npm run prisma:seed
+Omdat de huidige root-`netlify.toml` bewust naar `website/` wijst, moet de staging-site een aparte stagingbranch of een eigen Netlify-configuratie krijgen voordat deze wordt gekoppeld. Verwijder de demo-instellingen pas bij de definitieve omschakeling.
+
+## Vereiste stagingvariabelen
+
+Publiek:
+
+```txt
+NEXT_PUBLIC_APP_URL
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 ```
 
-4. Build de app:
+Server-only:
+
+```txt
+SUPABASE_SECRET_KEY
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+STRIPE_CONNECT_WEBHOOK_SECRET
+STRIPE_API_VERSION
+DATABASE_URL
+```
+
+Gebruik in staging alleen Supabase-staginggegevens en Stripe `sk_test_...` sleutels. De secret key en webhook secrets mogen nooit in GitHub of een `NEXT_PUBLIC_` variabele staan.
+
+## Supabase klaarzetten
+
+Lokaal:
 
 ```bash
+npx supabase start
+npm run supabase:reset
+npm run supabase:types
+```
+
+Voor het gehoste stagingproject:
+
+```bash
+npx supabase login
+npx supabase link --project-ref JOUW_PROJECT_REF
+npx supabase db push
+npx supabase gen types typescript --linked > src/lib/database.types.ts
+```
+
+Controleer daarna in Supabase:
+
+- e-mailbevestiging staat aan;
+- de juiste Site URL en redirect URLs zijn ingesteld;
+- gelekte wachtwoordcontrole en rate limits staan aan;
+- `listing-images` en `private-documents` bestaan;
+- RLS staat aan op alle publieke tabellen.
+
+## Stripe klaarzetten
+
+Gebruik Stripe testmodus:
+
+1. Activeer Connect voor het platform.
+2. Maak platform- en Connect-webhookendpoints.
+3. Gebruik dezelfde API-versie als `STRIPE_API_VERSION`.
+4. Zet webhook secrets apart in Netlify.
+5. Gebruik nooit live sleutels voordat checkout, refunds, payouts en geschillen end-to-end zijn getest.
+
+De huidige fase maakt Accounts v2-hostonboarding mogelijk. Checkout, refunds en transfers geven bewust een gecontroleerde fout totdat de webhookgestuurde betaalflow is geïmplementeerd.
+
+## Voor iedere deploy
+
+```bash
+npm test
+npm run typecheck
 npm run build
 ```
 
-5. Start productie:
+Met Docker:
 
 ```bash
-npm run start
+npm run supabase:reset
 ```
 
-## AI-aanpassingen blijven makkelijk
-
-De handigste workflow:
-
-1. Jij vraagt AI om een wijziging.
-2. AI past lokaal de code aan.
-3. We testen de site.
-4. De wijziging gaat naar GitHub.
-5. Netlify/Vercel maakt automatisch een nieuwe deploy.
-
-Voor kleine visuele aanpassingen aan de demo werken we vooral in:
-
-- `website/index.html`
-- `website/search.html`
-- `website/listing.html`
-- `website/new-listing.html`
-- `website/app.js`
-- `website/styles.css`
-
-Voor echte backend-functionaliteit werken we vooral in:
-
-- `src/app`
-- `src/components`
-- `src/lib`
-- `prisma/schema.prisma`
-- `prisma/seed.ts`
-
-## Belangrijke keuze
-
-Gebruik de statische demo om snel publiek te tonen wat je bedoelt. Gebruik de Next.js-app zodra mensen echt moeten registreren, betalen, berichten sturen en huizen beheren met gedeelde data.
+Promoveer staging pas naar productie nadat ook iDEAL, kaartbetalingen, dubbele webhooks, refunds, payout failures en dubbele boekingspogingen zijn getest.

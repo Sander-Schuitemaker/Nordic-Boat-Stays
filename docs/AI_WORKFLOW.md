@@ -34,9 +34,10 @@ Voor echte online functionaliteit met gedeelde data:
 
 - `src/app`: pagina's en routes
 - `src/components`: herbruikbare UI
-- `src/lib`: auth, database, listings, payments
-- `prisma/schema.prisma`: database structuur
-- `prisma/seed.ts`: voorbeelddata
+- `src/lib`: auth, database, listings en payments
+- `supabase/migrations`: database, boekingsregels en RLS
+- `supabase/seed.sql`: vaste platforminstellingen en voorzieningen
+- `prisma/`: alleen tijdelijke compatibiliteit tijdens de listingmigratie
 
 Voorbeelden van goede AI-opdrachten:
 
@@ -51,13 +52,13 @@ Voorbeelden van goede AI-opdrachten:
 1. Demo online zetten via Netlify.
 2. GitHub repository koppelen.
 3. Design uit `website/` stap voor stap overzetten naar `src/`.
-4. PostgreSQL database koppelen.
-5. Login en accounts server-side maken.
-6. Huizen toevoegen server-side maken.
-7. Boekingen server-side maken.
-8. Berichten server-side maken.
-9. Foto-upload koppelen.
-10. Stripe toevoegen.
+4. Supabase staging koppelen en migrations testen.
+5. Listing- en zoekdata naar Supabase migreren.
+6. Stripe Checkout en webhooks activeren.
+7. Berichten en favorieten naar Supabase migreren.
+8. Foto-upload via Supabase Storage activeren.
+9. Hostpayouts, refunds en geschillen testen.
+10. De Next.js-staging gecontroleerd promoveren.
 
 ## Belangrijk
 
@@ -67,4 +68,3 @@ Vraag AI na elke grotere wijziging om:
 - responsive gedrag te checken
 - vertaling mee te nemen
 - geen bestaande flow stuk te maken
-

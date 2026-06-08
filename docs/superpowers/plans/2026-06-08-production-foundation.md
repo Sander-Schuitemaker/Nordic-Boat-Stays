@@ -689,7 +689,7 @@ git commit -m "feat: add production payment boundaries"
 - Modify: `README.md`
 - Modify: `docs/DEPLOYMENT.md`
 
-- [ ] **Step 1: Ignore local-only artifacts**
+- [x] **Step 1: Ignore local-only artifacts**
 
 Ignore:
 
@@ -700,7 +700,7 @@ Ignore:
 coverage/
 ```
 
-- [ ] **Step 2: Document local setup**
+- [x] **Step 2: Document local setup**
 
 Document:
 
@@ -714,15 +714,15 @@ npm run dev
 
 Explain where local Supabase keys appear and that Stripe sandbox keys must be supplied by the owner.
 
-- [ ] **Step 3: Document deploy separation**
+- [x] **Step 3: Document deploy separation**
 
 The current Netlify site continues publishing `website/`. Create a separate staging Netlify site for the Next.js app. Do not remove `NETLIFY_NEXT_PLUGIN_SKIP` from the current production site during this phase.
 
-- [ ] **Step 4: Document required secrets**
+- [x] **Step 4: Document required secrets**
 
 List every environment variable and identify public versus server-only values. Never include real keys.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add .gitignore README.md docs/DEPLOYMENT.md

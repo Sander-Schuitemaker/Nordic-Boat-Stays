@@ -1,11 +1,15 @@
 .env
-.env.local
+.env.*
+!.env.example
 .next
 node_modules
 dist
 coverage
 *.log
+*.tsbuildinfo
 outputs/
 .netlify/
+.supabase/
 .superpowers/
 .worktrees/
+src/lib/database.types.tmp
