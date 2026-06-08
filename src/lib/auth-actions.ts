@@ -1,36 +1,33 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { z } from "zod";
 
 import { destroySession } from "@/lib/auth";
+import {
+  publicPasswordResetResult,
+  registerUser,
+} from "@/lib/auth/account-service";
+import { safeInternalPath } from "@/lib/auth/redirects";
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+} from "@/lib/auth/schemas";
 import { SupabaseNotConfiguredError } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-
-const loginSchema = z.object({
-  email: z.string().trim().email(),
-  password: z.string().min(10),
-  next: z.string().optional(),
-});
-
-const registerSchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email(),
-  password: z.string().min(10).max(128),
-  role: z.enum(["guest", "host"]),
-});
 
 export type AuthActionState = {
   error?: string;
   message?: string;
 };
 
-function safeRedirectPath(value: string | undefined): string | null {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return null;
+function appUrl(): string {
+  const value = process.env.NEXT_PUBLIC_APP_URL;
+  if (!value) {
+    throw new Error("NEXT_PUBLIC_APP_URL ontbreekt.");
   }
-
-  return value;
+  return new URL(value).origin;
 }
 
 function authErrorMessage(message: string): string {
@@ -47,18 +44,11 @@ function authErrorMessage(message: string): string {
     return "E-mailadres of wachtwoord klopt niet.";
   }
 
-  if (
-    normalized.includes("already registered") ||
-    normalized.includes("already exists")
-  ) {
-    return "Er bestaat al een account met dit e-mailadres.";
-  }
-
   if (normalized.includes("password")) {
-    return "Kies een sterker wachtwoord van minimaal 10 tekens.";
+    return "Kies een sterker wachtwoord van minimaal 12 tekens.";
   }
 
-  return "Inloggen of registreren is nu niet gelukt. Probeer het opnieuw.";
+  return "Deze actie is nu niet gelukt. Probeer het straks opnieuw.";
 }
 
 async function getConfiguredClient() {
@@ -68,7 +58,6 @@ async function getConfiguredClient() {
     if (error instanceof SupabaseNotConfiguredError) {
       return null;
     }
-
     throw error;
   }
 }
@@ -84,20 +73,18 @@ export async function loginAction(
   });
 
   if (!parsed.success) {
-    return {
-      error: "Vul een geldig e-mailadres en een wachtwoord van minimaal 10 tekens in.",
-    };
+    return { error: "Vul een geldig e-mailadres en wachtwoord in." };
   }
 
   const supabase = await getConfiguredClient();
   if (!supabase) {
     return {
-      error: "Inloggen wordt beschikbaar zodra de beveiligde backend is gekoppeld.",
+      error: "Inloggen wordt beschikbaar zodra Supabase is gekoppeld.",
     };
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: parsed.data.email.toLowerCase(),
+    email: parsed.data.email,
     password: parsed.data.password,
   });
 
@@ -107,22 +94,21 @@ export async function loginAction(
 
   const { data: profile } = await supabase
     .from("users")
-    .select("role, status")
+    .select("status, email_verified")
     .eq("id", data.user.id)
     .maybeSingle();
 
-  if (!profile || profile.status !== "active") {
+  if (!profile?.email_verified || profile.status === "pending_email_verification") {
+    await supabase.auth.signOut();
+    return { error: "Bevestig eerst je e-mailadres via de link in je inbox." };
+  }
+
+  if (profile.status !== "active") {
     await supabase.auth.signOut();
     return { error: "Dit account is niet actief. Neem contact op met support." };
   }
 
-  const requestedPath = safeRedirectPath(parsed.data.next);
-  redirect(
-    requestedPath ??
-      (profile.role === "host" || profile.role === "admin"
-        ? "/dashboard"
-        : "/"),
-  );
+  redirect(safeInternalPath(parsed.data.next) ?? "/account");
 }
 
 export async function registerAction(
@@ -130,49 +116,146 @@ export async function registerAction(
   formData: FormData,
 ): Promise<AuthActionState> {
   const parsed = registerSchema.safeParse({
-    name: formData.get("name"),
-    email: String(formData.get("email") || "").toLowerCase(),
+    fullName: formData.get("fullName"),
+    email: formData.get("email"),
     password: formData.get("password"),
-    role: formData.get("role"),
+    acceptTerms: formData.get("acceptTerms") === "on",
   });
 
   if (!parsed.success) {
     return {
       error:
-        "Controleer je naam, e-mailadres, accounttype en wachtwoord van minimaal 10 tekens.",
+        "Controleer je naam, e-mailadres, wachtwoord en akkoord met de voorwaarden.",
     };
   }
 
   const supabase = await getConfiguredClient();
   if (!supabase) {
     return {
-      error: "Registreren wordt beschikbaar zodra de beveiligde backend is gekoppeld.",
+      error: "Registreren wordt beschikbaar zodra Supabase is gekoppeld.",
     };
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email: parsed.data.email,
-    password: parsed.data.password,
-    options: {
-      data: {
-        full_name: parsed.data.name,
-        requested_role: parsed.data.role,
+  let result;
+  try {
+    result = await registerUser(
+      {
+        async signUp(request) {
+          const { data, error } = await supabase.auth.signUp({
+            email: request.email,
+            password: request.password,
+            options: {
+              emailRedirectTo: request.emailRedirectTo,
+              data: request.metadata,
+            },
+          });
+
+          return {
+            userId: data.user?.id ?? null,
+            hasSession: Boolean(data.session),
+            errorMessage: error?.message,
+          };
+        },
       },
-    },
+      parsed.data,
+      appUrl(),
+    );
+  } catch {
+    return { error: "De accountgegevens konden niet worden verwerkt." };
+  }
+
+  if (result.errorMessage && !result.errorMessage.toLowerCase().includes("registered")) {
+    return { error: authErrorMessage(result.errorMessage) };
+  }
+
+  if (result.hasSession) {
+    redirect("/account");
+  }
+
+  redirect(
+    `/verify-email?email=${encodeURIComponent(parsed.data.email)}&created=1`,
+  );
+}
+
+export async function resendVerificationAction(
+  _: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = forgotPasswordSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!parsed.success) {
+    return { error: "Vul een geldig e-mailadres in." };
+  }
+
+  const supabase = await getConfiguredClient();
+  if (supabase) {
+    await supabase.auth.resend({
+      type: "signup",
+      email: parsed.data.email,
+      options: {
+        emailRedirectTo: `${appUrl()}/auth/callback?next=${encodeURIComponent("/account")}`,
+      },
+    });
+  }
+
+  return {
+    message:
+      "Als het account nog verificatie nodig heeft, ontvang je een nieuwe e-mail.",
+  };
+}
+
+export async function requestPasswordResetAction(
+  _: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = forgotPasswordSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!parsed.success) {
+    return { error: "Vul een geldig e-mailadres in." };
+  }
+
+  const supabase = await getConfiguredClient();
+  if (supabase) {
+    await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+      redirectTo: `${appUrl()}/auth/callback?next=${encodeURIComponent("/reset-password")}`,
+    });
+  }
+
+  return publicPasswordResetResult();
+}
+
+export async function resetPasswordAction(
+  _: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = resetPasswordSchema.safeParse({
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!parsed.success) {
+    return { error: "Gebruik twee gelijke wachtwoorden van minimaal 12 tekens." };
+  }
+
+  const supabase = await getConfiguredClient();
+  if (!supabase) {
+    return { error: "Wachtwoord wijzigen is nog niet beschikbaar." };
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.password,
   });
 
   if (error) {
     return { error: authErrorMessage(error.message) };
   }
 
-  if (!data.session) {
-    return {
-      message:
-        "Je account is aangemaakt. Bevestig je e-mailadres via de link in je inbox.",
-    };
-  }
-
-  redirect(parsed.data.role === "host" ? "/dashboard" : "/");
+  await supabase.auth.signOut({ scope: "others" });
+  return { message: "Je wachtwoord is gewijzigd. Je kunt nu verder." };
 }
 
 export async function logoutAction() {
