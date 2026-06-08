@@ -140,7 +140,7 @@ git commit -m "chore: add production integration tooling"
 - Create: `src/lib/env.ts`
 - Modify: `.env.example`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 Test these cases:
 
@@ -160,7 +160,7 @@ expect(() =>
 
 Also test that valid sandbox values parse and secrets are never returned by `parsePublicEnv`.
 
-- [ ] **Step 2: Confirm failure**
+- [x] **Step 2: Confirm failure**
 
 Run:
 
@@ -170,7 +170,7 @@ npx vitest run src/lib/__tests__/env.test.ts
 
 Expected: FAIL because `src/lib/env.ts` does not exist.
 
-- [ ] **Step 3: Implement environment schemas**
+- [x] **Step 3: Implement environment schemas**
 
 Use Zod schemas with these variables:
 
@@ -193,7 +193,7 @@ Rules:
 - Webhook secrets start with `whsec_`.
 - No secret value appears in thrown error messages.
 
-- [ ] **Step 4: Expand `.env.example`**
+- [x] **Step 4: Expand `.env.example`**
 
 Use obvious placeholders only:
 
@@ -208,7 +208,7 @@ STRIPE_CONNECT_WEBHOOK_SECRET="whsec_replace_me"
 STRIPE_API_VERSION="2026-02-25.clover"
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run:
 
@@ -218,7 +218,7 @@ npx vitest run src/lib/__tests__/env.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add .env.example src/lib/env.ts src/lib/__tests__/env.test.ts
