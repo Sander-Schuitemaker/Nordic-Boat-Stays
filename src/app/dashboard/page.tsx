@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Landmark, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireHost } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -37,8 +39,34 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card><CardHeader><CardTitle>Jouw huizen</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{hostListings.length}</CardContent></Card>
         <Card><CardHeader><CardTitle>Open aanvragen</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{bookings.filter((item) => item.status === "pending").length}</CardContent></Card>
-        <Card><CardHeader><CardTitle>Mock omzet</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{formatCurrency(revenue)}</CardContent></Card>
+        <Card><CardHeader><CardTitle>Boekingswaarde</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{formatCurrency(revenue)}</CardContent></Card>
       </div>
+      <Card>
+        <CardHeader className="gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex size-11 items-center justify-center rounded-full bg-secondary">
+              <Landmark className="size-5" aria-hidden="true" />
+            </span>
+            <div>
+              <CardTitle>Uitbetalingen</CardTitle>
+              <p className="mt-1 text-sm text-muted-foreground">Ontvang inkomsten veilig op je eigen bankrekening.</p>
+            </div>
+          </div>
+          <Badge>Nog niet gekoppeld</Badge>
+        </CardHeader>
+        <CardContent className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <div className="flex gap-3 text-sm text-muted-foreground">
+            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-foreground" aria-hidden="true" />
+            <p>
+              Identiteits- en bankgegevens worden later rechtstreeks door Stripe gecontroleerd.
+              Nordic Boat Stays slaat deze gevoelige gegevens niet zelf op.
+            </p>
+          </div>
+          <Button type="button" variant="outline" disabled>
+            Stripe koppelen - binnenkort
+          </Button>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>Mijn accommodaties</CardTitle>
