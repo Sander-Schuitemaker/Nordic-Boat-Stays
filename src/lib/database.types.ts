@@ -491,6 +491,40 @@ export type Database = {
       };
     };
     Functions: {
+      apply_as_host: {
+        Args: {
+          p_host_name: string;
+          p_host_type: string;
+          p_company_name: string | null;
+          p_country_code: string;
+          p_terms_version: string;
+        };
+        Returns: {
+          host_user_id: string;
+          host_status: HostStatus;
+        }[];
+      };
+      admin_set_user_status: {
+        Args: {
+          p_target_user_id: string;
+          p_status: UserStatus;
+          p_reason: string;
+        };
+        Returns: undefined;
+      };
+      admin_set_user_role: {
+        Args: {
+          p_target_user_id: string;
+          p_role: UserRole;
+          p_enabled: boolean;
+          p_reason: string;
+        };
+        Returns: undefined;
+      };
+      deactivate_my_account: {
+        Args: Record<string, never>;
+        Returns: undefined;
+      };
       create_booking_hold: {
         Args: {
           p_listing_id: string;

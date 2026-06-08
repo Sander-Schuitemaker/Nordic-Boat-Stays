@@ -1,6 +1,6 @@
 begin;
 
-select plan(12);
+select plan(15);
 
 select has_table('public', 'user_profiles');
 select has_table('public', 'user_roles');
@@ -14,6 +14,9 @@ select col_is_pk('public', 'user_profiles', 'user_id');
 select has_index('public', 'user_roles', 'user_roles_active_unique');
 select has_index('public', 'login_attempts', 'login_attempts_email_created_idx');
 select has_index('public', 'user_sessions', 'user_sessions_user_active_idx');
+select has_function('private', 'handle_new_user', array[]::text[]);
+select has_function('public', 'apply_as_host');
+select has_function('public', 'deactivate_my_account', array[]::text[]);
 
 select * from finish();
 rollback;
