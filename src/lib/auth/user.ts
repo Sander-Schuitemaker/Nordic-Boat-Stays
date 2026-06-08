@@ -2,7 +2,14 @@ import { SupabaseNotConfiguredError } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type AppUserRole = "guest" | "host" | "admin";
-export type AppUserStatus = "active" | "restricted" | "blocked" | "deleted";
+export type AppUserStatus =
+  | "pending_email_verification"
+  | "active"
+  | "suspended"
+  | "deactivated"
+  | "deleted"
+  | "restricted"
+  | "blocked";
 
 export type AppUser = {
   id: string;

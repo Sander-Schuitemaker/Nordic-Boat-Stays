@@ -18,7 +18,27 @@ type TableDefinition<
 };
 
 type UserRole = "guest" | "host" | "admin";
-type UserStatus = "active" | "restricted" | "blocked" | "deleted";
+type UserStatus =
+  | "pending_email_verification"
+  | "active"
+  | "suspended"
+  | "deactivated"
+  | "deleted"
+  | "restricted"
+  | "blocked";
+type HostStatus =
+  | "not_started"
+  | "pending_verification"
+  | "verified"
+  | "rejected"
+  | "restricted"
+  | "suspended";
+type VerificationStatus =
+  | "not_started"
+  | "pending"
+  | "approved"
+  | "failed"
+  | "expired";
 type HostVerificationStatus =
   | "not_started"
   | "pending"
@@ -81,12 +101,67 @@ type UserRow = {
   id: string;
   email: string;
   full_name: string;
-  avatar_path: string | null;
+  avatar_url: string | null;
   role: UserRole;
   status: UserStatus;
   locale: string;
-  phone_e164: string | null;
+  phone: string | null;
+  is_guest: boolean;
+  is_host: boolean;
+  is_admin: boolean;
+  email_verified: boolean;
+  phone_verified: boolean;
   last_login_at: string | null;
+  deletion_requested_at: string | null;
+  anonymized_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type UserProfileRow = {
+  user_id: string;
+  date_of_birth: string | null;
+  country: string | null;
+  language: string;
+  bio: string | null;
+  emergency_contact: Json;
+  preferred_currency: string;
+  notification_preferences: Json;
+  created_at: string;
+  updated_at: string;
+};
+
+type UserRoleRow = {
+  id: string;
+  user_id: string;
+  role: UserRole;
+  granted_by: string | null;
+  created_at: string;
+  revoked_at: string | null;
+};
+
+type UserSessionRow = {
+  id: string;
+  user_id: string;
+  auth_session_id: string;
+  ip_address: string | null;
+  user_agent: string | null;
+  last_seen_at: string;
+  created_at: string;
+  expires_at: string;
+  revoked_at: string | null;
+};
+
+type UserVerificationRow = {
+  id: string;
+  user_id: string;
+  verification_type: string;
+  provider: string;
+  provider_reference: string | null;
+  status: VerificationStatus;
+  failure_reason: string | null;
+  verified_at: string | null;
+  expires_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -197,13 +272,55 @@ export type Database = {
         Partial<UserRow> & Pick<UserRow, "id" | "email" | "full_name">,
         Partial<UserRow>
       >;
+      user_profiles: TableDefinition<
+        UserProfileRow,
+        Partial<UserProfileRow> & Pick<UserProfileRow, "user_id">,
+        Partial<UserProfileRow>
+      >;
+      user_roles: TableDefinition<
+        UserRoleRow,
+        Partial<UserRoleRow> & Pick<UserRoleRow, "user_id" | "role">,
+        Partial<UserRoleRow>
+      >;
+      user_sessions: TableDefinition<
+        UserSessionRow,
+        Partial<UserSessionRow> &
+          Pick<
+            UserSessionRow,
+            "user_id" | "auth_session_id" | "expires_at"
+          >,
+        Partial<UserSessionRow>
+      >;
+      user_verifications: TableDefinition<
+        UserVerificationRow,
+        Partial<UserVerificationRow> &
+          Pick<
+            UserVerificationRow,
+            "user_id" | "verification_type" | "provider"
+          >,
+        Partial<UserVerificationRow>
+      >;
+      login_attempts: TableDefinition<{
+        id: number;
+        email_hash: string;
+        ip_address: string | null;
+        success: boolean;
+        failure_reason: string | null;
+        created_at: string;
+      }>;
       host_profiles: TableDefinition<{
+        id: string;
         user_id: string;
-        display_name: string;
-        legal_entity_type: string;
+        host_name: string;
+        host_type: string;
         business_name: string | null;
+        tax_number: string | null;
         country_code: string;
+        status: HostStatus;
         verification_status: HostVerificationStatus;
+        payout_account_status: string;
+        response_rate: number | null;
+        response_time_minutes: number | null;
         platform_approved: boolean;
         approved_by: string | null;
         approved_at: string | null;
@@ -393,6 +510,8 @@ export type Database = {
     Enums: {
       user_role: UserRole;
       user_status: UserStatus;
+      host_status: HostStatus;
+      verification_status: VerificationStatus;
       host_verification_status: HostVerificationStatus;
       listing_status: ListingStatus;
       booking_status: BookingStatus;
