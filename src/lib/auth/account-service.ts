@@ -1,6 +1,14 @@
 import type { z } from "zod";
 
-import { profileSchema, registerSchema } from "@/lib/auth/schemas";
+import type {
+  AppRole,
+  HostAccountStatus,
+} from "@/lib/auth/authorization";
+import {
+  hostApplicationSchema,
+  profileSchema,
+  registerSchema,
+} from "@/lib/auth/schemas";
 
 export type SignUpRequest = {
   email: string;
@@ -65,5 +73,33 @@ export function toProfileUpdates(
       bio: parsed.bio ?? null,
       preferred_currency: parsed.preferredCurrency,
     },
+  };
+}
+
+export type HostApplicationGateway = {
+  apply(input: {
+    hostName: string;
+    hostType: "individual" | "company";
+    companyName: string | null;
+    countryCode: string;
+  }): Promise<{ hostStatus: HostAccountStatus }>;
+};
+
+export async function applyAsHost(
+  gateway: HostApplicationGateway,
+  user: { roles: AppRole[] },
+  input: z.input<typeof hostApplicationSchema>,
+) {
+  const parsed = hostApplicationSchema.parse(input);
+  const result = await gateway.apply({
+    hostName: parsed.hostName,
+    hostType: parsed.hostType,
+    companyName: parsed.companyName ?? null,
+    countryCode: parsed.countryCode,
+  });
+
+  return {
+    roles: Array.from(new Set<AppRole>([...user.roles, "host"])),
+    hostStatus: result.hostStatus,
   };
 }

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireHost } from "@/lib/auth";
+import { canPublishListing } from "@/lib/auth/authorization";
 import { prisma } from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
 
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const user = await requireHost();
+  const canManageListings = canPublishListing(user);
   const [hostListings, bookings] = await Promise.all([
     prisma.listing.findMany({
       where: { hostId: user.id },
@@ -32,9 +34,15 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-semibold">Verhuurdersdashboard</h1>
           <p className="mt-2 text-muted-foreground">Beheer je eigen huizen, boten en boekingsaanvragen.</p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/listings/new">Huis toevoegen</Link>
-        </Button>
+        {canManageListings ? (
+          <Button asChild>
+            <Link href="/dashboard/listings/new">Huis toevoegen</Link>
+          </Button>
+        ) : (
+          <Button type="button" disabled>
+            Huis toevoegen na verificatie
+          </Button>
+        )}
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         <Card><CardHeader><CardTitle>Jouw huizen</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">{hostListings.length}</CardContent></Card>

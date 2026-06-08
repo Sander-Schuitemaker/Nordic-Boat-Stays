@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyAsHost,
   publicPasswordResetResult,
   registerUser,
   toProfileUpdates,
@@ -101,5 +102,28 @@ describe("profile updates", () => {
     expect(updates.user).not.toHaveProperty("status");
     expect(updates.user).not.toHaveProperty("is_admin");
     expect(updates.user).not.toHaveProperty("role");
+  });
+});
+
+describe("host application", () => {
+  it("adds host access without removing guest access", async () => {
+    const result = await applyAsHost(
+      {
+        async apply() {
+          return { hostStatus: "pending_verification" as const };
+        },
+      },
+      { roles: ["guest"] },
+      {
+        hostName: "Sander Schuit",
+        hostType: "individual",
+        companyName: "",
+        countryCode: "nl",
+        acceptHostTerms: true,
+      },
+    );
+
+    expect(result.roles).toEqual(["guest", "host"]);
+    expect(result.hostStatus).toBe("pending_verification");
   });
 });

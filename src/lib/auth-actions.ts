@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { destroySession, requireUser } from "@/lib/auth";
 import {
+  applyAsHost,
   publicPasswordResetResult,
   registerUser,
   toProfileUpdates,
@@ -12,6 +13,7 @@ import {
 import { safeInternalPath } from "@/lib/auth/redirects";
 import {
   forgotPasswordSchema,
+  hostApplicationSchema,
   loginSchema,
   notificationPreferencesSchema,
   profileSchema,
@@ -411,6 +413,64 @@ export async function uploadAvatarAction(
   revalidatePath("/account");
   revalidatePath("/account/profile");
   return { message: "Je profielfoto is bijgewerkt." };
+}
+
+export async function applyAsHostAction(
+  _: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = hostApplicationSchema.safeParse({
+    hostName: formData.get("hostName"),
+    hostType: formData.get("hostType"),
+    companyName: formData.get("companyName") || undefined,
+    countryCode: formData.get("countryCode"),
+    acceptHostTerms: formData.get("acceptHostTerms") === "on",
+  });
+
+  if (!parsed.success) {
+    return { error: "Controleer de verhuurdersgegevens en voorwaarden." };
+  }
+
+  const user = await requireUser();
+  const supabase = await getConfiguredClient();
+  if (!supabase) {
+    return { error: "Verhuurder worden is nog niet beschikbaar." };
+  }
+
+  try {
+    await applyAsHost(
+      {
+        async apply(input) {
+          const { data, error } = await supabase.rpc("apply_as_host", {
+            p_host_name: input.hostName,
+            p_host_type: input.hostType,
+            p_company_name: input.companyName,
+            p_country_code: input.countryCode,
+            p_terms_version: "2026-06",
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          return {
+            hostStatus: data?.[0]?.host_status ?? "pending_verification",
+          };
+        },
+      },
+      user,
+      parsed.data,
+    );
+  } catch {
+    return {
+      error:
+        "Je aanvraag kon niet worden opgeslagen. Probeer het later opnieuw.",
+    };
+  }
+
+  revalidatePath("/account");
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }
 
 export async function logoutAction() {

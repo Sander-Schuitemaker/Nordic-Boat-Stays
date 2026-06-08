@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { BoatType } from "@prisma/client";
 import { getCurrentUser } from "@/lib/auth";
-import { hasRole } from "@/lib/auth/authorization";
+import { canPublishListing, hasRole } from "@/lib/auth/authorization";
 import { prisma } from "@/lib/db";
 import { listingFormSchema } from "@/lib/validation";
 
@@ -18,9 +18,12 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (
     !user ||
-    (!hasRole(user.roles, "host") && !hasRole(user.roles, "admin"))
+    (!canPublishListing(user) && !hasRole(user.roles, "admin"))
   ) {
-    return NextResponse.json({ error: "Log in als verhuurder om een huis toe te voegen." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Je verhuurdersaccount moet eerst zijn geverifieerd." },
+      { status: 403 },
+    );
   }
   const body = await request.json();
   const parsed = listingFormSchema.safeParse(body);

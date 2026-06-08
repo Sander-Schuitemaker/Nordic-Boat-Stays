@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import {
   canAccessAdminRoute,
   canAccessHost,
+  canPublishListing,
   canPerformAdminAction,
   isUsableAccount,
 } from "@/lib/auth/authorization";
@@ -47,6 +48,16 @@ export async function requireHost() {
 
   if (!canAccessHost(user)) {
     redirect("/host/apply");
+  }
+
+  return user;
+}
+
+export async function requireVerifiedHost() {
+  const user = await requireHost();
+
+  if (!canPublishListing(user)) {
+    redirect("/dashboard?verification=required");
   }
 
   return user;

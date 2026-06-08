@@ -1,6 +1,9 @@
 import { ListingForm } from "@/components/dashboard/listing-form";
+import { requireVerifiedHost } from "@/lib/auth";
 
-export default function NewListingPage() {
+export default async function NewListingPage() {
+  await requireVerifiedHost();
+
   return (
     <div>
       <h1 className="text-3xl font-semibold">Nieuw vakantiehuis</h1>
