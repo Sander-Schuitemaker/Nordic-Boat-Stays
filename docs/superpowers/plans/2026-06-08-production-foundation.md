@@ -234,23 +234,23 @@ git commit -m "feat: validate production environment"
 - Create: `src/lib/supabase/middleware.ts`
 - Create: `src/middleware.ts`
 
-- [ ] **Step 1: Implement the browser client**
+- [x] **Step 1: Implement the browser client**
 
 `createBrowserClient` uses only the public URL and publishable key. When Supabase is not configured, do not instantiate a client; callers receive an explicit configuration error.
 
-- [ ] **Step 2: Implement the server client**
+- [x] **Step 2: Implement the server client**
 
 Use `createServerClient` with `next/headers` cookies. Cookie writes must be wrapped because Server Components cannot always set cookies.
 
-- [ ] **Step 3: Implement the admin client**
+- [x] **Step 3: Implement the admin client**
 
 Import `server-only`. Use `SUPABASE_SECRET_KEY`, disable session persistence and never export it from a client component.
 
-- [ ] **Step 4: Implement session refresh**
+- [x] **Step 4: Implement session refresh**
 
 The helper creates a Supabase server client from `NextRequest` and `NextResponse`, calls `auth.getUser()`, and forwards refreshed cookies.
 
-- [ ] **Step 5: Add `src/middleware.ts`**
+- [x] **Step 5: Add `src/middleware.ts`**
 
 Match all application routes except static assets. Refresh authentication cookies and redirect unauthenticated users away from:
 
@@ -263,7 +263,7 @@ Match all application routes except static assets. Refresh authentication cookie
 
 Do not authorize host/admin roles in proxy; role authorization remains server-side.
 
-- [ ] **Step 6: Typecheck**
+- [x] **Step 6: Typecheck**
 
 Run:
 
@@ -273,7 +273,7 @@ npm run typecheck
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/lib/supabase src/middleware.ts
