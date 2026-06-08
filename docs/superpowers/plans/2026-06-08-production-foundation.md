@@ -70,7 +70,7 @@ Keep for now:
 - Modify: `package.json`
 - Create: `vitest.config.ts`
 
-- [ ] **Step 1: Add scripts and dependencies**
+- [x] **Step 1: Add scripts and dependencies**
 
 Add these scripts:
 
@@ -102,11 +102,11 @@ supabase
 vitest
 ```
 
-- [ ] **Step 2: Configure Vitest**
+- [x] **Step 2: Configure Vitest**
 
 Create `vitest.config.ts` with Node environment, `@` alias to `src`, and test inclusion under `src/**/*.test.ts`.
 
-- [ ] **Step 3: Install packages**
+- [x] **Step 3: Install packages**
 
 Run:
 
@@ -116,7 +116,7 @@ npm install
 
 Expected: a new `package-lock.json`, successful dependency resolution and no install failure.
 
-- [ ] **Step 4: Verify the empty harness**
+- [x] **Step 4: Verify the empty harness**
 
 Run:
 
@@ -126,7 +126,7 @@ npm test -- --passWithNoTests
 
 Expected: exit code 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add package.json package-lock.json vitest.config.ts
