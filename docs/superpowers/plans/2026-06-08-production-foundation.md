@@ -289,11 +289,11 @@ git commit -m "feat: add Supabase SSR clients"
 - Create: `supabase/migrations/202606080003_booking_finance_schema.sql`
 - Create: `supabase/migrations/202606080004_communication_audit_schema.sql`
 
-- [ ] **Step 1: Initialize local Supabase configuration**
+- [x] **Step 1: Initialize local Supabase configuration**
 
 Set project ID `nordic-boat-stays`, API port `54321`, database port `54322`, Studio port `54323`, and enable e-mail confirmations in production documentation while local development uses the test mail server.
 
-- [ ] **Step 2: Add extensions and enums**
+- [x] **Step 2: Add extensions and enums**
 
 Enable:
 
@@ -306,7 +306,7 @@ create extension if not exists pgcrypto;
 
 Create all enums from the approved design: user role/status, host verification, listing status, booking status, payment status, payout status, refund status, availability type/status, boat type, dispute status, deposit status and job status.
 
-- [ ] **Step 3: Add identity and listing schema**
+- [x] **Step 3: Add identity and listing schema**
 
 Create:
 
@@ -328,7 +328,7 @@ listing_translations
 
 Use UUID foreign keys, cent amounts, basis-point fees, Oslo-local dates, PostGIS points and the indexes in the approved specification.
 
-- [ ] **Step 4: Add booking and finance schema**
+- [x] **Step 4: Add booking and finance schema**
 
 Create:
 
@@ -347,7 +347,7 @@ platform_settings
 
 Add check constraints for positive amounts, valid date order and allowed percentages. `payments.transfer_group` is indexed but not unique because retries share the booking group.
 
-- [ ] **Step 5: Add communication and operations schema**
+- [x] **Step 5: Add communication and operations schema**
 
 Create:
 
@@ -363,7 +363,7 @@ outbox_jobs
 
 Make webhook event IDs and outbox deduplication keys unique. Revoke updates and deletes from audit logs for application roles.
 
-- [ ] **Step 6: Reset local database**
+- [ ] **Step 6: Reset local database (blocked: Docker is not installed)**
 
 Run:
 
@@ -374,7 +374,7 @@ npx supabase db reset
 
 Expected: every migration applies without SQL errors.
 
-- [ ] **Step 7: Generate types**
+- [x] **Step 7: Add generated-shape types (regenerate with CLI when Docker is available)**
 
 Run:
 
@@ -384,7 +384,7 @@ npm run supabase:types
 
 Expected: `src/lib/database.types.ts` contains all public tables and enums.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add supabase src/lib/database.types.ts
