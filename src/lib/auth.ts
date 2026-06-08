@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 
 import {
-  canAccessAdmin,
-  canAccessDashboard,
-  getCurrentUser,
-  isActiveUser,
-} from "@/lib/auth/user";
+  canAccessAdminRoute,
+  canAccessHost,
+  canPerformAdminAction,
+  isUsableAccount,
+} from "@/lib/auth/authorization";
+import { getCurrentUser } from "@/lib/auth/user";
 import { SupabaseNotConfiguredError } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -30,7 +31,11 @@ export async function requireUser() {
     redirect("/login");
   }
 
-  if (!isActiveUser(user)) {
+  if (!isUsableAccount(user.status)) {
+    if (user.status === "pending_email_verification") {
+      redirect("/verify-email");
+    }
+
     redirect(`/login?error=account-${user.status}`);
   }
 
@@ -40,8 +45,8 @@ export async function requireUser() {
 export async function requireHost() {
   const user = await requireUser();
 
-  if (!canAccessDashboard(user)) {
-    redirect("/");
+  if (!canAccessHost(user)) {
+    redirect("/host/apply");
   }
 
   return user;
@@ -50,8 +55,18 @@ export async function requireHost() {
 export async function requireAdmin() {
   const user = await requireUser();
 
-  if (!canAccessAdmin(user)) {
+  if (!canAccessAdminRoute(user)) {
     redirect("/");
+  }
+
+  return user;
+}
+
+export async function requireAdminAction() {
+  const user = await requireAdmin();
+
+  if (!canPerformAdminAction(user)) {
+    redirect("/account/security?mfa=required");
   }
 
   return user;

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { BoatType } from "@prisma/client";
 import { getCurrentUser } from "@/lib/auth";
+import { hasRole } from "@/lib/auth/authorization";
 import { prisma } from "@/lib/db";
 import { listingFormSchema } from "@/lib/validation";
 
@@ -15,7 +16,10 @@ function slugify(value: string) {
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
-  if (!user || (user.role !== "host" && user.role !== "admin")) {
+  if (
+    !user ||
+    (!hasRole(user.roles, "host") && !hasRole(user.roles, "admin"))
+  ) {
     return NextResponse.json({ error: "Log in als verhuurder om een huis toe te voegen." }, { status: 401 });
   }
   const body = await request.json();

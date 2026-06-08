@@ -1,32 +1,77 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  canAccessAdmin,
-  canAccessDashboard,
-  isActiveUser,
-} from "@/lib/auth/user";
+  canAccessHost,
+  canPerformAdminAction,
+  canPublishListing,
+  hasRole,
+  isUsableAccount,
+} from "@/lib/auth/authorization";
 
 describe("application authorization", () => {
-  it("allows active hosts into the dashboard", () => {
-    expect(canAccessDashboard({ role: "host", status: "active" })).toBe(true);
+  it("allows one active account to be both guest and host", () => {
+    expect(
+      canAccessHost({
+        status: "active",
+        roles: ["guest", "host"],
+        hostStatus: "pending_verification",
+      }),
+    ).toBe(true);
   });
 
-  it("does not allow guests into the host dashboard", () => {
-    expect(canAccessDashboard({ role: "guest", status: "active" })).toBe(false);
+  it("does not allow guest-only accounts into the host dashboard", () => {
+    expect(
+      canAccessHost({
+        status: "active",
+        roles: ["guest"],
+        hostStatus: null,
+      }),
+    ).toBe(false);
   });
 
-  it("blocks restricted or blocked privileged users", () => {
-    expect(canAccessDashboard({ role: "admin", status: "blocked" })).toBe(false);
-    expect(canAccessAdmin({ role: "admin", status: "restricted" })).toBe(false);
+  it("requires a verified host before publishing", () => {
+    expect(
+      canPublishListing({
+        status: "active",
+        roles: ["guest", "host"],
+        hostStatus: "pending_verification",
+      }),
+    ).toBe(false);
+    expect(
+      canPublishListing({
+        status: "active",
+        roles: ["guest", "host"],
+        hostStatus: "verified",
+      }),
+    ).toBe(true);
   });
 
-  it("allows only active admins into admin routes", () => {
-    expect(canAccessAdmin({ role: "admin", status: "active" })).toBe(true);
-    expect(canAccessAdmin({ role: "host", status: "active" })).toBe(false);
+  it("requires an active admin and aal2 for sensitive actions", () => {
+    expect(
+      canPerformAdminAction({
+        status: "active",
+        roles: ["guest", "admin"],
+        assuranceLevel: "aal1",
+      }),
+    ).toBe(false);
+    expect(
+      canPerformAdminAction({
+        status: "active",
+        roles: ["guest", "admin"],
+        assuranceLevel: "aal2",
+      }),
+    ).toBe(true);
   });
 
   it("treats only active accounts as usable", () => {
-    expect(isActiveUser({ status: "active" })).toBe(true);
-    expect(isActiveUser({ status: "deleted" })).toBe(false);
+    expect(isUsableAccount("active")).toBe(true);
+    expect(isUsableAccount("pending_email_verification")).toBe(false);
+    expect(isUsableAccount("suspended")).toBe(false);
+    expect(isUsableAccount("deactivated")).toBe(false);
+  });
+
+  it("checks normalized roles", () => {
+    expect(hasRole(["guest", "host"], "host")).toBe(true);
+    expect(hasRole(["guest"], "admin")).toBe(false);
   });
 });

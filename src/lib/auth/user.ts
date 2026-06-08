@@ -1,39 +1,27 @@
 import { SupabaseNotConfiguredError } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type {
+  AccountStatus,
+  AppRole,
+  AssuranceLevel,
+  HostAccountStatus,
+} from "@/lib/auth/authorization";
 
-export type AppUserRole = "guest" | "host" | "admin";
-export type AppUserStatus =
-  | "pending_email_verification"
-  | "active"
-  | "suspended"
-  | "deactivated"
-  | "deleted"
-  | "restricted"
-  | "blocked";
+export type AppUserRole = AppRole;
+export type AppUserStatus = AccountStatus;
 
 export type AppUser = {
   id: string;
   email: string;
   fullName: string;
   role: AppUserRole;
+  roles: AppUserRole[];
   status: AppUserStatus;
+  hostStatus: HostAccountStatus | null;
+  emailVerified: boolean;
+  avatarUrl: string | null;
+  assuranceLevel: AssuranceLevel;
 };
-
-type AuthorizationUser = Pick<AppUser, "role" | "status">;
-
-export function isActiveUser(user: Pick<AppUser, "status">): boolean {
-  return user.status === "active";
-}
-
-export function canAccessDashboard(user: AuthorizationUser): boolean {
-  return (
-    isActiveUser(user) && (user.role === "host" || user.role === "admin")
-  );
-}
-
-export function canAccessAdmin(user: AuthorizationUser): boolean {
-  return isActiveUser(user) && user.role === "admin";
-}
 
 export async function getCurrentUser(): Promise<AppUser | null> {
   let supabase;
@@ -56,21 +44,51 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     return null;
   }
 
-  const { data: profile, error } = await supabase
-    .from("users")
-    .select("id, email, full_name, role, status")
-    .eq("id", authUser.id)
-    .maybeSingle();
+  const [profileResult, roleResult, hostResult, assuranceResult] =
+    await Promise.all([
+      supabase
+        .from("users")
+        .select(
+          "id, email, full_name, role, status, email_verified, avatar_url",
+        )
+        .eq("id", authUser.id)
+        .maybeSingle(),
+      supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", authUser.id)
+        .is("revoked_at", null),
+      supabase
+        .from("host_profiles")
+        .select("status")
+        .eq("user_id", authUser.id)
+        .maybeSingle(),
+      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+    ]);
 
-  if (error || !profile) {
+  const profile = profileResult.data;
+
+  if (profileResult.error || !profile) {
     return null;
   }
+
+  const roles =
+    roleResult.data?.map((item) => item.role as AppUserRole) ?? [
+      profile.role as AppUserRole,
+    ];
 
   return {
     id: profile.id,
     email: profile.email,
     fullName: profile.full_name,
-    role: profile.role,
-    status: profile.status,
+    role: profile.role as AppUserRole,
+    roles,
+    status: profile.status as AppUserStatus,
+    hostStatus:
+      (hostResult.data?.status as HostAccountStatus | undefined) ?? null,
+    emailVerified: profile.email_verified,
+    avatarUrl: profile.avatar_url,
+    assuranceLevel:
+      assuranceResult.data?.currentLevel === "aal2" ? "aal2" : "aal1",
   };
 }

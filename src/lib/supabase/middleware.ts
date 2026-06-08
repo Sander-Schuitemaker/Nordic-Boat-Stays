@@ -4,16 +4,25 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getPublicEnv } from "@/lib/env";
 
 const protectedRouteRoots = [
+  "/account",
+  "/admin",
+  "/host",
   "/dashboard",
   "/favorites",
   "/messages",
   "/bookings",
 ] as const;
 
+const authOnlyRoutes = ["/login", "/register", "/forgot-password"] as const;
+
 export function isProtectedPath(pathname: string): boolean {
   return protectedRouteRoots.some(
     (root) => pathname === root || pathname.startsWith(`${root}/`),
   );
+}
+
+export function isAuthOnlyPath(pathname: string): boolean {
+  return authOnlyRoutes.includes(pathname as (typeof authOnlyRoutes)[number]);
 }
 
 function copyCookies(source: NextResponse, target: NextResponse): NextResponse {
@@ -65,6 +74,14 @@ export async function updateSupabaseSession(request: NextRequest) {
     );
 
     return copyCookies(response, NextResponse.redirect(loginUrl));
+  }
+
+  if (user && isAuthOnlyPath(request.nextUrl.pathname)) {
+    const accountUrl = request.nextUrl.clone();
+    accountUrl.pathname = "/account";
+    accountUrl.search = "";
+
+    return copyCookies(response, NextResponse.redirect(accountUrl));
   }
 
   return response;

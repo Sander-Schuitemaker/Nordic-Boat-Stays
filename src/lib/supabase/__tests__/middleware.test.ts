@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { isProtectedPath } from "@/lib/supabase/middleware";
+import {
+  isAuthOnlyPath,
+  isProtectedPath,
+} from "@/lib/supabase/middleware";
 
 describe("isProtectedPath", () => {
   it.each([
@@ -9,6 +12,11 @@ describe("isProtectedPath", () => {
     "/favorites",
     "/messages",
     "/bookings",
+    "/account",
+    "/account/security",
+    "/host/apply",
+    "/admin",
+    "/admin/users",
   ])("protects %s", (pathname) => {
     expect(isProtectedPath(pathname)).toBe(true);
   });
@@ -17,6 +25,13 @@ describe("isProtectedPath", () => {
     "keeps %s public",
     (pathname) => {
       expect(isProtectedPath(pathname)).toBe(false);
+    },
+  );
+
+  it.each(["/login", "/register", "/forgot-password"])(
+    "marks %s as auth-only",
+    (pathname) => {
+      expect(isAuthOnlyPath(pathname)).toBe(true);
     },
   );
 });
