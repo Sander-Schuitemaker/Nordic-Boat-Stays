@@ -460,36 +460,36 @@ git commit -m "feat: enforce booking availability"
 **Files:**
 - Create: `supabase/migrations/202606080006_rls.sql`
 
-- [ ] **Step 1: Enable RLS**
+- [x] **Step 1: Enable RLS**
 
 Enable RLS on every exposed public table.
 
-- [ ] **Step 2: Grant minimum privileges**
+- [x] **Step 2: Grant minimum privileges**
 
 - `anon`: read approved public listing views only.
 - `authenticated`: limited reads/writes subject to RLS.
 - No browser writes to payments, payouts, platform fees, webhooks or audit logs.
 
-- [ ] **Step 3: Add guest policies**
+- [x] **Step 3: Add guest policies**
 
 Users can read/update allowed fields on their own profile, manage their favorites, read their own bookings and financial summaries, and participate only in their own conversations.
 
-- [ ] **Step 4: Add host policies**
+- [x] **Step 4: Add host policies**
 
 Hosts can manage only their own draft listing content, images, amenities, price rules and manual blocks. They cannot approve listings, change financial snapshots or overwrite confirmed booking blocks.
 
-- [ ] **Step 5: Add public views**
+- [x] **Step 5: Add public views**
 
 Create security-invoker views for published listing search/detail data. Exclude exact addresses, private notes, host legal data and financial data.
 
-- [ ] **Step 6: Add Storage buckets and policies**
+- [x] **Step 6: Add Storage buckets and policies**
 
 Define:
 
 - `listing-images`: public reads for approved assets, host write access under their listing prefix.
 - `private-documents`: no public access; signed server URLs only.
 
-- [ ] **Step 7: Run RLS smoke tests**
+- [ ] **Step 7: Run RLS smoke tests (scripts added; execution blocked by missing Docker)**
 
 Using local Supabase users:
 
@@ -498,7 +498,7 @@ Using local Supabase users:
 - host cannot update another host's listing;
 - authenticated user cannot insert payment or audit rows.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add supabase/migrations/202606080006_rls.sql
