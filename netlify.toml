@@ -1,10 +1,15 @@
 [build]
-  base = "website"
-  publish = "."
-  command = "echo 'Deploying static Nordic Boat Stays demo'"
+  command = "npm run build"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "22"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 3000
+  port = 8888
+  framework = "#auto"
 
 [[headers]]
   for = "/*"
@@ -12,8 +17,4 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"

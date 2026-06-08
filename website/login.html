@@ -17,27 +17,19 @@
     </header>
     <main class="auth-shell">
       <div class="auth-stack">
-        <form class="panel auth-card" onsubmit="mockLogin(event)">
-          <h1>Inloggen</h1>
-          <p class="lead">Log in met je eigen lokale account of gebruik het demo-verhuurdersaccount.</p>
-          <div class="field" style="margin-top:24px;"><label>E-mail</label><input name="email" type="email" value="host@nordicboatstays.test"></div>
-          <div class="field" style="margin-top:14px;"><label>Wachtwoord</label><input name="password" type="password" value="demo1234"></div>
-          <button class="button" style="width:100%;margin-top:18px;" type="submit">Inloggen</button>
-          <p class="lead" data-login-message></p>
-        </form>
-
-        <form class="panel auth-card" onsubmit="mockRegister(event)">
-          <h2>Nieuw account</h2>
-          <p class="lead">Maak een lokaal MVP-account aan. Je account, huizen, boekingen en berichten blijven in deze browser bewaard.</p>
-          <div class="field" style="margin-top:18px;"><label>Naam</label><input name="name" placeholder="Je naam" required></div>
-          <div class="field" style="margin-top:14px;"><label>E-mail</label><input name="email" type="email" placeholder="naam@example.com" required></div>
-          <div class="field" style="margin-top:14px;"><label>Wachtwoord</label><input name="password" type="password" placeholder="Minimaal 4 tekens" required></div>
-          <div class="field" style="margin-top:14px;"><label>Accounttype</label><select name="role"><option value="guest">Huurder</option><option value="host">Verhuurder</option></select></div>
-          <button class="button secondary" style="width:100%;margin-top:18px;" type="submit">Account aanmaken</button>
-          <p class="lead" data-register-message></p>
-        </form>
+        <section class="panel auth-card">
+          <h1>Deze demo-login is gearchiveerd</h1>
+          <p class="lead">
+            Accounts worden nu veilig beheerd in de Next.js-app met Supabase
+            Auth, e-mailverificatie en persoonlijke sessies. Lokale
+            browseraccounts uit deze demo worden niet meer gebruikt.
+          </p>
+          <div class="hero-actions" style="margin-top:18px;">
+            <a class="button" href="/login">Naar veilig inloggen</a>
+            <a class="button secondary" href="/register">Account aanmaken</a>
+          </div>
+        </section>
       </div>
     </main>
-    <script src="app.js"></script>
   </body>
 </html>

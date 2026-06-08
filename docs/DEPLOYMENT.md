@@ -1,110 +1,112 @@
 # Nordic Boat Stays deployen
 
-## Twee gescheiden sites
+## Aanbevolen omgevingen
 
-Gebruik voorlopig twee Netlify-sites:
+Gebruik drie gescheiden omgevingen:
 
-1. **Publieke demo**: bouwt `website/` via de bestaande `netlify.toml`.
-2. **Productie-app staging**: bouwt de Next.js-app vanuit de repositoryroot.
+1. lokaal voor ontwikkeling;
+2. Netlify Deploy Previews met een Supabase-stagingproject en Stripe-testmodus;
+3. productie met een eigen Supabase-project, SMTP-provider en Stripe-liveconfiguratie.
 
-Zo blijft de zichtbare demo beschikbaar terwijl accounts, database en betalingen worden getest.
+De map `website/` is een gearchiveerde demo. Netlify publiceert uitsluitend de Next.js-app uit de repositoryroot.
 
-## Publieke demo
+## Netlify koppelen
 
-De huidige Netlify-site gebruikt:
+1. Importeer de GitHub-repository in Netlify.
+2. Netlify leest `netlify.toml` automatisch.
+3. Controleer:
 
-```txt
-Base directory: website
-Build command: echo 'Deploying static Nordic Boat Stays demo'
-Publish directory: .
-```
-
-Laat op deze site voorlopig ook staan:
-
-```txt
-NETLIFY_NEXT_PLUGIN_SKIP=true
-```
-
-Deze site bevat browserdata en is geen echte boekingsbackend.
-
-## Aparte Next.js-staging
-
-Maak pas een tweede Netlify-site wanneer er een Supabase-stagingproject en Stripe-testsleutels zijn.
-
-De staging-build gebruikt:
-
-```txt
+```text
 Base directory: leeg
 Build command: npm run build
 Publish directory: .next
 Node.js: 22
 ```
 
-Netlify detecteert Next.js en installeert de Next-runtime automatisch. SSR, API-routes en `middleware.ts` worden door die runtime vertaald.
+4. Voeg de environmentvariabelen toe via Netlify, nooit via Git:
 
-Omdat de huidige root-`netlify.toml` bewust naar `website/` wijst, moet de staging-site een aparte stagingbranch of een eigen Netlify-configuratie krijgen voordat deze wordt gekoppeld. Verwijder de demo-instellingen pas bij de definitieve omschakeling.
-
-## Vereiste stagingvariabelen
-
-Publiek:
-
-```txt
+```text
 NEXT_PUBLIC_APP_URL
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-```
-
-Server-only:
-
-```txt
 SUPABASE_SECRET_KEY
+AUTH_RATE_LIMIT_SECRET
+DATABASE_URL
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
 STRIPE_CONNECT_WEBHOOK_SECRET
 STRIPE_API_VERSION
-DATABASE_URL
 ```
 
-Gebruik in staging alleen Supabase-staginggegevens en Stripe `sk_test_...` sleutels. De secret key en webhook secrets mogen nooit in GitHub of een `NEXT_PUBLIC_` variabele staan.
+Voor een Deploy Preview moet `NEXT_PUBLIC_APP_URL` overeenkomen met de gebruikte vaste staging-URL. Voeg dezelfde callback-URL toe aan de Supabase-allowlist.
 
-## Supabase klaarzetten
-
-Lokaal:
-
-```bash
-npx supabase start
-npm run supabase:reset
-npm run supabase:types
-```
-
-Voor het gehoste stagingproject:
+## Supabase staging
 
 ```bash
 npx supabase login
-npx supabase link --project-ref JOUW_PROJECT_REF
+npx supabase link --project-ref JOUW_STAGING_PROJECT_REF
 npx supabase db push
 npx supabase gen types typescript --linked > src/lib/database.types.ts
 ```
 
-Controleer daarna in Supabase:
+Controleer in het Supabase-dashboard:
 
 - e-mailbevestiging staat aan;
-- de juiste Site URL en redirect URLs zijn ingesteld;
-- gelekte wachtwoordcontrole en rate limits staan aan;
-- `listing-images` en `private-documents` bestaan;
-- RLS staat aan op alle publieke tabellen.
+- een echte SMTP-provider is gekoppeld;
+- Site URL en `/auth/callback`-redirects kloppen;
+- gelekte-wachtwoordcontrole en Supabase Auth-rate-limits staan aan;
+- RLS staat aan op alle publieke account- en marketplacetabellen;
+- buckets `avatars`, `listing-images` en `private-documents` bestaan;
+- er staat geen secret key in browsercode of een `NEXT_PUBLIC_` variabele.
 
-## Stripe klaarzetten
+Redirects:
 
-Gebruik Stripe testmodus:
+```text
+http://localhost:3000/auth/callback
+https://staging.jouwdomein.nl/auth/callback
+https://jouwdomein.nl/auth/callback
+```
 
-1. Activeer Connect voor het platform.
-2. Maak platform- en Connect-webhookendpoints.
-3. Gebruik dezelfde API-versie als `STRIPE_API_VERSION`.
-4. Zet webhook secrets apart in Netlify.
-5. Gebruik nooit live sleutels voordat checkout, refunds, payouts en geschillen end-to-end zijn getest.
+## E-mailflows testen
 
-De huidige fase maakt Accounts v2-hostonboarding mogelijk. Checkout, refunds en transfers geven bewust een gecontroleerde fout totdat de webhookgestuurde betaalflow is geïmplementeerd.
+Test op staging:
+
+1. registreren;
+2. verificatiemail openen;
+3. callback en login;
+4. verificatiemail opnieuw versturen;
+5. wachtwoord vergeten;
+6. resetlink openen;
+7. nieuw wachtwoord instellen;
+8. oude sessies controleren.
+
+Controleer SPF, DKIM en DMARC bij de gekozen SMTP-provider voordat productie open gaat.
+
+## Eerste beheerder
+
+Maak eerst een normaal, geverifieerd account. Voer daarna eenmalig uit in de Supabase SQL Editor:
+
+```sql
+insert into public.user_roles(user_id, role)
+select id, 'admin'::public.user_role
+from public.users
+where email = 'jouw-email@example.com'
+on conflict (user_id, role) where revoked_at is null do nothing;
+```
+
+Adminmutaties vereisen AAL2. Richt daarom in Supabase Auth minimaal één TOTP-factor in voor beheerders voordat status- of rolwijzigingen worden gebruikt.
+
+## Stripe en hostuitbetalingen
+
+Gebruik eerst Stripe-testmodus:
+
+1. activeer Connect voor het platform;
+2. maak platform- en Connect-webhookendpoints;
+3. zet webhook secrets alleen in Netlify;
+4. laat hosts hun identiteit en bankrekening rechtstreeks bij Stripe koppelen;
+5. test iDEAL, kaarten, refunds, chargebacks en mislukte payouts.
+
+Nordic Boat Stays hoort geen bankrekening- of identiteitsdocumenten zelf op te slaan. De host krijgt later via een Stripe-hosted onboardinglink toegang tot de bankkoppeling.
 
 ## Voor iedere deploy
 
@@ -112,12 +114,14 @@ De huidige fase maakt Accounts v2-hostonboarding mogelijk. Checkout, refunds en 
 npm test
 npm run typecheck
 npm run build
+npm audit --omit=dev
 ```
 
-Met Docker:
+Met een lokale Docker-runtime:
 
 ```bash
 npm run supabase:reset
+npx supabase test db
 ```
 
-Promoveer staging pas naar productie nadat ook iDEAL, kaartbetalingen, dubbele webhooks, refunds, payout failures en dubbele boekingspogingen zijn getest.
+Promoveer staging pas nadat registratie, herstel, profielen, hostaanvraag, RLS-isolatie, adminrechten en accountdeactivatie met echte Supabase-e-mails zijn getest.
