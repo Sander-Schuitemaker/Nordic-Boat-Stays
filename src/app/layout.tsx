@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Anchor, Heart, UserRound } from "lucide-react";
+import { Anchor } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
+import { AccountMenu } from "@/components/account/account-menu";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
-import { logoutAction } from "@/lib/auth-actions";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,30 +38,30 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               </span>
               <span>Nordic Boat Stays</span>
             </Link>
-            <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
+            <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground lg:flex">
               <Link href="/search">Zoeken</Link>
               <Link href="/about">Over ons</Link>
               <Link href="/contact">Contact</Link>
-              <Link href="/messages">Berichten</Link>
-              <Link href="/dashboard">Dashboard</Link>
+              {user ? <Link href="/messages">Berichten</Link> : null}
+              {user?.roles.includes("host") ? (
+                <Link href="/dashboard">Verhuren</Link>
+              ) : (
+                <Link href="/host/apply">Verhuurder worden</Link>
+              )}
             </nav>
             <div className="flex items-center gap-2">
-              <Button asChild variant="ghost" size="icon" aria-label="Favorieten">
-                <Link href="/favorites">
-                  <Heart className="size-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="hidden sm:inline-flex">
-                <Link href={user ? "/dashboard" : "/login"}>
-                  <UserRound className="size-4" />
-                  {user ? user.fullName : "Inloggen"}
-                </Link>
-              </Button>
               {user ? (
-                <form action={logoutAction}>
-                  <Button type="submit" variant="ghost">Uitloggen</Button>
-                </form>
-              ) : null}
+                <AccountMenu user={user} />
+              ) : (
+                <>
+                  <Button asChild variant="ghost" className="hidden sm:inline-flex">
+                    <Link href="/login">Inloggen</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/register">Registreren</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </header>

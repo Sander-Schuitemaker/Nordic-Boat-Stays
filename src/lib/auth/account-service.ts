@@ -1,6 +1,6 @@
 import type { z } from "zod";
 
-import { registerSchema } from "@/lib/auth/schemas";
+import { profileSchema, registerSchema } from "@/lib/auth/schemas";
 
 export type SignUpRequest = {
   email: string;
@@ -44,5 +44,26 @@ export async function registerUser(
 export function publicPasswordResetResult() {
   return {
     message: "Als dit e-mailadres bestaat, ontvang je zo een herstelmail.",
+  };
+}
+
+export function toProfileUpdates(
+  input: z.input<typeof profileSchema>,
+) {
+  const parsed = profileSchema.parse(input);
+
+  return {
+    user: {
+      full_name: parsed.fullName,
+      phone: parsed.phone ?? null,
+      locale: parsed.language,
+    },
+    profile: {
+      date_of_birth: parsed.dateOfBirth ?? null,
+      country: parsed.country ?? null,
+      language: parsed.language,
+      bio: parsed.bio ?? null,
+      preferred_currency: parsed.preferredCurrency,
+    },
   };
 }

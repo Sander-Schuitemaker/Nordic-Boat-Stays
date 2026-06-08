@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   loginSchema,
+  notificationPreferencesSchema,
   profileSchema,
   registerSchema,
   resetPasswordSchema,
@@ -72,6 +73,31 @@ describe("resetPasswordSchema", () => {
       resetPasswordSchema.safeParse({
         password: "veilig-wachtwoord-2026",
         confirmPassword: "ander-wachtwoord-2026",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("notificationPreferencesSchema", () => {
+  it("only accepts explicit notification channels", () => {
+    expect(
+      notificationPreferencesSchema.parse({
+        booking: true,
+        messages: false,
+        marketing: false,
+      }),
+    ).toEqual({
+      booking: true,
+      messages: false,
+      marketing: false,
+    });
+
+    expect(
+      notificationPreferencesSchema.safeParse({
+        booking: true,
+        messages: true,
+        marketing: false,
+        isAdmin: true,
       }).success,
     ).toBe(false);
   });

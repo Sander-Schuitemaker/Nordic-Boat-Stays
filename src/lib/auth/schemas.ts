@@ -66,6 +66,14 @@ export const profileSchema = z.object({
   preferredCurrency: z.enum(["EUR", "NOK"]),
 });
 
+export const notificationPreferencesSchema = z
+  .object({
+    booking: z.boolean(),
+    messages: z.boolean(),
+    marketing: z.boolean(),
+  })
+  .strict();
+
 export const hostApplicationSchema = z.object({
   hostName: z.string().trim().min(2).max(100),
   hostType: z.enum(["individual", "company"]),

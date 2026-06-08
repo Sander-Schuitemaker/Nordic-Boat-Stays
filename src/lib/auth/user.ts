@@ -76,6 +76,14 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     roleResult.data?.map((item) => item.role as AppUserRole) ?? [
       profile.role as AppUserRole,
     ];
+  let avatarUrl: string | null = null;
+
+  if (profile.avatar_url) {
+    const { data } = await supabase.storage
+      .from("avatars")
+      .createSignedUrl(profile.avatar_url, 60 * 60);
+    avatarUrl = data?.signedUrl ?? null;
+  }
 
   return {
     id: profile.id,
@@ -87,7 +95,7 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     hostStatus:
       (hostResult.data?.status as HostAccountStatus | undefined) ?? null,
     emailVerified: profile.email_verified,
-    avatarUrl: profile.avatar_url,
+    avatarUrl,
     assuranceLevel:
       assuranceResult.data?.currentLevel === "aal2" ? "aal2" : "aal1",
   };

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   publicPasswordResetResult,
   registerUser,
+  toProfileUpdates,
   type AuthGateway,
   type SignUpRequest,
 } from "@/lib/auth/account-service";
@@ -68,5 +69,37 @@ describe("password reset privacy", () => {
     expect(publicPasswordResetResult()).toEqual({
       message: "Als dit e-mailadres bestaat, ontvang je zo een herstelmail.",
     });
+  });
+});
+
+describe("profile updates", () => {
+  it("only emits user-editable profile columns", () => {
+    const updates = toProfileUpdates({
+      fullName: "Sander Schuit",
+      phone: "+31 6 12345678",
+      dateOfBirth: "1990-04-18",
+      country: "nl",
+      language: "nl",
+      bio: "Liefhebber van Noorse fjorden.",
+      preferredCurrency: "EUR",
+    });
+
+    expect(updates).toEqual({
+      user: {
+        full_name: "Sander Schuit",
+        phone: "+31 6 12345678",
+        locale: "nl",
+      },
+      profile: {
+        date_of_birth: "1990-04-18",
+        country: "NL",
+        language: "nl",
+        bio: "Liefhebber van Noorse fjorden.",
+        preferred_currency: "EUR",
+      },
+    });
+    expect(updates.user).not.toHaveProperty("status");
+    expect(updates.user).not.toHaveProperty("is_admin");
+    expect(updates.user).not.toHaveProperty("role");
   });
 });
